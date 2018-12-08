@@ -20,18 +20,11 @@ class Character():
 
         self.location = location
 
-    def num2hex(self,i):
+    def num2chr(self,i):
         if(i < 10):
             return str(i)
         else:
-            data = {
-                10: 'A',
-                11: 'B',
-                12: 'C',
-                13: 'D'
-            }
-            
-            return data[i]
+            return chr(i + 55)
 
     def show(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
@@ -50,7 +43,7 @@ class Character():
 
     def showStats(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
-        print("(" + self.num2hex(self.location[0]) + ", " + self.num2hex(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack) + " Speed: " + str(self.Speed) + " Defense: " + str(self.Defense))
+        print("(" + self.num2chr(self.location[0]) + ", " + self.num2chr(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack) + " Speed: " + str(self.Speed) + " Defense: " + str(self.Defense))
   
     def getDict(self):
         return {
@@ -74,29 +67,25 @@ class Character():
 
 class Board():
     def __init__(self):
-        self.size = 13
+        self.size = 50
         self.board = []
         for i in range(self.size):
             self.board.append(['*']*self.size)
 
-    def num2hex(self,i):
+    def num2chr(self,i):
         if(i < 10):
             return str(i)
         else:
-            data = {
-                10: 'A',
-                11: 'B',
-                12: 'C',
-                13: 'D'
-            }
-            
-            return data[i]
+            return chr(i + 55)
 
     def show(self):
-        print("  0 1 2 3 4 5 6 7 8 9 A B C")
-        for i in range(len(self.board)):
-            print(self.num2hex(i) + ' ' + ' '.join(self.board[i]) + " " + self.num2hex(i))
-        print("  0 1 2 3 4 5 6 7 8 9 A B C")
+        axis = " "
+        for i in range(self.size):
+            axis = axis + " " + self.num2chr(i)
+        print(axis)
+        for i in range(self.size):
+            print(self.num2chr(i) + ' ' + ' '.join(self.board[i]) + " " + self.num2chr(i))
+        print(axis)
 
     def place(self,location,symbol):
         self.board[location[0]][location[1]] = symbol
