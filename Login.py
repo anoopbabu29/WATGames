@@ -55,6 +55,7 @@ class LoginConnection():
         style = d["Style"]
         weapon = d["Weapon"]["Name"]
         weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
+        maxhealth = d["MaxHealth"]
         health = d["Health"]
         attack = d["Attack"]
         defense = d["Defense"]
@@ -62,6 +63,7 @@ class LoginConnection():
         money = d["Money"]
         stash = d["Stash"]
         character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
+        character.MaxHealth = maxhealth
 
         return character
 
@@ -329,6 +331,7 @@ if(character == -1):
 
 def menu():
     print("Commands:")
+    print("\tHeal - Spend $100 to increase health")
     print("\tBuy - Spend $1000 to get new Weapon")
     print("\tFight - Start 1v1 Battle with friend")
     print("\tEquip - Equip Weapon from stash")
@@ -340,6 +343,25 @@ def menu():
 menu()
 command = input("&>> ").upper()
 while(command != 'Q' and command != 'QUIT'):
+    if(command == 'HEAL'):
+        print("Are sure you want to spend $100 to increase health to " + str(character.MaxHealth) + "? (y/n)")
+        command = input("&>> ").upper()
+        if(character.Money >= 100):
+            if(character.Health < character.MaxHealth):
+                if(command == 'Y'):
+                    character.Money = character.Money - 100
+                    character.Health = character.MaxHealth
+                    print("You are successfully healed")
+                    print()
+                    input("type anything to coninue... ")
+                    conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                    clear()
+                    character.show()
+                    menu()
+            else:
+                print("You are already at Max Health")
+        else:
+            print("You do not have enough money")
     if(command == 'BUY'):
         print("Are sure you want to spend $1000 on a new Weapon? (y/n)")
         command = input("&>> ").upper()
@@ -349,7 +371,7 @@ while(command != 'Q' and command != 'QUIT'):
                 Weapon = None
                 while(new_weapon == False):
                     Weapon = LB.generate()
-                    print(Weapon)
+                    #print(Weapon)
                     new_weapon = True
                     for key, value in character.Stash.items():
                         if(key == Weapon[0]):
@@ -357,9 +379,9 @@ while(command != 'Q' and command != 'QUIT'):
                 character.Money = character.Money - 1000
                 print("You Got:",Weapon)
                 print()
-                input("type anything to coninue... ")
                 character.Stash[Weapon[0]] = {0:Weapon[1][0],1:Weapon[1][1],2:Weapon[1][2],3:Weapon[1][3],4:Weapon[1][4]}
                 conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                input("type anything to coninue... ")
                 clear()
                 character.show()
                 menu()
@@ -383,7 +405,7 @@ while(command != 'Q' and command != 'QUIT'):
 
         if(command.upper() != "Q" and command.upper() != "QUIT"):
             if(character.Style[0] in character.Stash[command][4] or character.Style[1] in character.Stash[command][4]):
-                if(character.Health + character.Stash[command][0] >= 0 and character.Attack + character.Stash[command][1] >= 0 and character.Defense + character.Stash[command][2] >= 0 and character.Speed + character.Stash[command][3] >= 0):
+                if(character.Health + character.Stash[command][0] > 0 and character.Attack + character.Stash[command][1] > 0 and character.Defense + character.Stash[command][2] > 0 and character.Speed + character.Stash[command][3] > 0):
                     character.Stash[character.Weapon] = {0:character.WeaponBonus[0],1:character.WeaponBonus[1],2:character.WeaponBonus[2],3:character.WeaponBonus[3],4:character.WeaponBonus[4]}
                     character.Weapon = command
                     character.WeaponBonus = (character.Stash[command][0],character.Stash[command][1],character.Stash[command][2],character.Stash[command][3],character.Stash[command][4])
@@ -392,7 +414,7 @@ while(command != 'Q' and command != 'QUIT'):
                     character.show()
                     menu()
                 else:
-                    print("This item cannot make one of your stats negative")
+                    print("This item cannot make one of your stats less than 1")
             else:
                 print("Item cannot be equiped with your style")
     elif(command == 'TRADE'):

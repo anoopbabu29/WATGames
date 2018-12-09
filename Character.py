@@ -74,6 +74,7 @@ class Character():
         self.Weapon = Weapon
         self.WeaponBonus = WeaponBonus #(Health, Attack, Defense, Speed, Type)
 
+        self.MaxHealth = Health
         self.Health = Health
         self.Attack = Attack
         self.Defense = Defense
@@ -116,6 +117,9 @@ class Character():
 
     def getStats(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
+        if(self.Health < 0):
+            return red + "{ Dead } " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack) + " Speed: " + str(self.Speed) + " Defense: " + str(self.Defense) + " Range: " + str(self.getRange()) + end
+  
         return "(" + self.num2chr(self.location[0]) + ", " + self.num2chr(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack) + " Speed: " + str(self.Speed) + " Defense: " + str(self.Defense) + " Range: " + str(self.getRange())
   
     def getDict(self):
@@ -130,6 +134,7 @@ class Character():
                 "Speed" : self.WeaponBonus[3],
                 "Type" : self.WeaponBonus[4]
             },
+            "MaxHealth" : self.MaxHealth,
             "Health" : self.Health,
             "Attack" : self.Attack,
             "Defense" : self.Defense,
