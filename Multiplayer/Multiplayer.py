@@ -85,7 +85,7 @@ class MultiplayerConnection():
         self.dataChange = True
         
 
-    def start(self,id,name,numPlayers = 2):
+    def start(self,id,name,numPlayers = 2,game = None):
         connection = {
             id : {
                 'Game' : "empty",
@@ -100,6 +100,8 @@ class MultiplayerConnection():
 
         if(not (id in self.db.get("Multiplayer"))):
             self.db.append("Multiplayer", connection)
+            if(game!=None):
+                self.pushGame(id,game)
             timer = 120
             self.id = id
             self.my_stream = self.db.db.child("Multiplayer/" + str(id)).stream(self.stream_handler)
@@ -150,7 +152,8 @@ class MultiplayerConnection():
             if self.dataChange:
                 clear()
                 print("Room: " + id + "\n")
-                self.db.show("Multiplayer/" + str(id))
+                print()
+                #self.db.show("Multiplayer/" + str(id))
                 print("Waiting for Player " + str(self.db.get("Multiplayer/" + str(id) + "/Turn")))
                 self.dataChange = False
 
@@ -163,3 +166,7 @@ class MultiplayerConnection():
     def roomShow(self,id):
         clear()
         self.db.show("Multiplayer/" + str(id))
+    
+    def close(self,id):
+        clear()
+        self.db.delete("Multiplayer/" + str(id))
