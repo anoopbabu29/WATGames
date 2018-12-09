@@ -229,7 +229,7 @@ class Board():
                     self.swap(team[l], selPos, color)
                     isMoved[l] = True
                     break
-            elif(ch == 'w'):
+            elif(ord(ch) == 119):
                 #Move Up if possible
                 if(selPos[0] - 1 >= 0):
                     self.board[selPos[0]][selPos[1]] = selChar
@@ -237,21 +237,21 @@ class Board():
                     selChar = self.board[selPos[0]][selPos[1]]
                     self.board[selPos[0]][selPos[1]] = green + selChar + end
 
-            elif(ch == 'a'):
+            elif(ord(ch) == 97):
                 #Move Left if possible
                 if(selPos[1] - 1 >= 0):
                     self.board[selPos[0]][selPos[1]] = selChar
                     selPos = [selPos[0], selPos[1] - 1]
                     selChar = self.board[selPos[0]][selPos[1]]
                     self.board[selPos[0]][selPos[1]] = green + selChar + end
-            elif(ch == 's'):
+            elif(ord(ch) == 115):
                 #Move Down if possible
                 if(selPos[0] + 1 <= len(self.board) - 1):
                     self.board[selPos[0]][selPos[1]] = selChar
                     selPos = [selPos[0] + 1, selPos[1]]
                     selChar = self.board[selPos[0]][selPos[1]]
                     self.board[selPos[0]][selPos[1]] = green + selChar + end
-            elif(ch == 'd'):
+            elif(ord(ch) == 100):
                 #Move Right if possible
                 if(selPos[1] + 1 <= len(self.board[selPos[0]]) - 1):
                     self.board[selPos[0]][selPos[1]] = selChar
@@ -304,10 +304,10 @@ class Board():
             #Character Selection
             ch = getch.__call__()
             #Left Input
-            if(ch == 'a'):
+            if(ord(ch) == 97):
                 self.board[selCharacter.location[0]][selCharacter.location[1]] = color + selCharacter.Style + end
                 selCharacter, l = self.selChar(team, isMoved, (l), 0)
-            elif(ch == 'd'):
+            elif(ord(ch) == 100):
                 self.board[selCharacter.location[0]][selCharacter.location[1]] = color + selCharacter.Style + end
                 selCharacter, l = self.selChar(team, isMoved, (l + 1) , 1)
             #Select Char
@@ -409,6 +409,7 @@ print()
 # Next player's turn
 
 cIn = ' '
+
 
 while(ord(cIn) != 3):
     #Character
