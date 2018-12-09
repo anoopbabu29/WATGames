@@ -1,5 +1,5 @@
 from Multiplayer.Multiplayer import Database
-from character_class import Character
+from Character import Character
 from lootbox import Lootbox
 from uuid import getnode as get_mac
 import os
@@ -269,13 +269,16 @@ while(command != 'Q' and command != 'QUIT'):
 
         if(command.upper() != "Q" and command.upper() != "QUIT"):
             if(character.Style[0] in character.Stash[command][4] or character.Style[1] in character.Stash[command][4]):
-                character.Stash[character.Weapon] = {0:character.WeaponBonus[0],1:character.WeaponBonus[1],2:character.WeaponBonus[2],3:character.WeaponBonus[3],4:character.WeaponBonus[4]}
-                character.Weapon = command
-                character.WeaponBonus = (character.Stash[command][0],character.Stash[command][1],character.Stash[command][2],character.Stash[command][3],character.Stash[command][4])
-                del character.Stash[command]
-                clear()
-                character.show()
-                menu()
+                if(character.Health + character.Stash[command][0] >= 0 and character.Attack + character.Stash[command][1] >= 0 and character.Defense + character.Stash[command][2] >= 0 and character.Speed + character.Stash[command][3] >= 0):
+                    character.Stash[character.Weapon] = {0:character.WeaponBonus[0],1:character.WeaponBonus[1],2:character.WeaponBonus[2],3:character.WeaponBonus[3],4:character.WeaponBonus[4]}
+                    character.Weapon = command
+                    character.WeaponBonus = (character.Stash[command][0],character.Stash[command][1],character.Stash[command][2],character.Stash[command][3],character.Stash[command][4])
+                    del character.Stash[command]
+                    clear()
+                    character.show()
+                    menu()
+                else:
+                    print("This item cannot make one of your stats negative")
             else:
                 print("Item cannot be equiped with your style")
     elif(command == 'CLEAR'):
