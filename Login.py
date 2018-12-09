@@ -194,7 +194,7 @@ def begin(conn):
             return -1
 
 
-        character = Character(Name=Name, Style=Style1 + Style2, Weapon=Weapon, WeaponBonus=WeaponBonus, Health=Health, Attack=Attack, Defense=Defense, Speed=Speed)
+        character = Character(Name=Name, Style=Style1 + Style2, Weapon=Weapon, WeaponBonus=WeaponBonus, Health=Health, Attack=Attack, Defense=Defense, Speed=Speed, Money=1005)
 
         #
 
