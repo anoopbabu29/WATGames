@@ -1,7 +1,10 @@
 from Multiplayer.Multiplayer import Database
 from character_class import Character
+from lootbox import Lootbox
 from uuid import getnode as get_mac
 import os
+
+LB = Lootbox()
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -35,13 +38,13 @@ class LoginConnection():
         name = d["Name"]
         style = d["Style"]
         weapon = d["Weapon"]["Name"]
-        weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"])
+        weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
         health = d["Health"]
         attack = d["Attack"]
         defense = d["Defense"]
         speed = d["Speed"]
         money = d["Money"]
-        stash = d["Stash"].split(",")
+        stash = d["Stash"]
         character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
 
         return character
@@ -72,7 +75,7 @@ def begin(conn):
             password = input("Password: ")
             rpassword = input("Retype Password: ")
 
-        gm = Character("Dummy","M", Stash=["Empty"])
+        gm = Character("Dummy","M")
         character = conn.create(username,password,gm)
         try:
             while(character == -1):
@@ -94,15 +97,20 @@ def begin(conn):
                 while(not (Style1 in {'S','X','L','M','A'}) or not (Style1 in {'S','X','L','M','A'})):
                     print("Invalid Types: Type S for Swordsman, X for Axeman, L for Lancer, M for Mage, and A for Archer")
                     Style1 = input("Character Style1: ").upper()
-                    Style2 = input("Character Style1: ").upper()
+                    Style2 = input("Character Style2: ").upper()
 
                 clear()
                 print("You are " + Name + " the " + types[Style1] + " and " + types[Style2])
                 Good = input("Is this good (y/n)? ")
                 
-
-            Weapon = "Empty"
-            WeaponBonus = (0,0,0,0)
+            clear()
+            loot = LB.generate()
+            loot[1][4] = Style1 + Style2
+            print("You Got:",loot)
+            print()
+            input("type anything to coninue... ")
+            Weapon = loot[0]
+            WeaponBonus = (loot[1][0],loot[1][1],loot[1][2],loot[1][3],loot[1][4])
 
             #
             pool = 30
@@ -197,7 +205,90 @@ def begin(conn):
     clear()
     character.show()
     print()
-    return character
+    return [character, username]
 
 conn = LoginConnection()
-begin(conn)
+info = begin(conn)
+character = info[0]
+username = info[1]
+if(character == -1):
+    quit()
+
+def menu():
+    print("Commands:")
+    print("\tBuy - Spend $1000 to get new Weapon")
+    print("\tFight - Start 1v1 Battle with friend")
+    print("\tEquip - Equip Weapon from stash")
+    print("\tClear - Clear Menu")
+    print("\tSave - Save progress")
+    print("\tQuit - Quit Menu")
+
+menu()
+command = input("&>> ").upper()
+while(command != 'Q' and command != 'QUIT'):
+    if(command == 'BUY'):
+        print("Are sure you want to spend $1000 on a new Weapon? (y/n)")
+        command = input("&>> ").upper()
+        if(character.Money >= 1000):
+            if(command == 'Y'):
+                new_weapon = False
+                Weapon = None
+                while(new_weapon == False):
+                    Weapon = LB.generate()
+                    print(Weapon)
+                    new_weapon = True
+                    for key, value in character.Stash.items():
+                        if(key == Weapon[0]):
+                            new_weapon = False
+                character.Money = character.Money - 1000
+                print("You Got:",Weapon)
+                print()
+                input("type anything to coninue... ")
+                character.Stash[Weapon[0]] = {0:Weapon[1][0],1:Weapon[1][1],2:Weapon[1][2],3:Weapon[1][3]}
+                conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                clear()
+                character.show()
+                menu()
+        else:
+            print("You do not have enough money")
+    elif(command == 'FIGHT'):
+        print("Not Ready yet")
+    elif(command == 'EQUIP'):
+        weapon = False
+        print("Type the name of the item you want to equiped")
+        command = input("&>> ")
+        for key, value in character.Stash.items():
+            if(key == command):
+                weapon = True
+        while(weapon == False and command.upper() != "Q" and command.upper() != "QUIT"):
+            print("Item not found. Type the name of the item you want to equiped")
+            command = input("&>> ")
+            for key, value in character.Stash.items():
+                if(key == command):
+                    weapon = True
+
+        if(command.upper() != "Q" and command.upper() != "QUIT"):
+            if(character.Style[0] in character.Stash[command][4] or character.Style[1] in character.Stash[command][4]):
+                character.Stash[character.Weapon] = {0:character.WeaponBonus[0],1:character.WeaponBonus[1],2:character.WeaponBonus[2],3:character.WeaponBonus[3],4:character.WeaponBonus[4]}
+                character.Weapon = command
+                character.WeaponBonus = (character.Stash[command][0],character.Stash[command][1],character.Stash[command][2],character.Stash[command][3],character.Stash[command][4])
+                del character.Stash[command]
+                clear()
+                character.show()
+                menu()
+            else:
+                print("Item cannot be equiped with your style")
+    elif(command == 'CLEAR'):
+        clear()
+        character.show()
+        menu()
+    elif(command == 'SAVE'):
+        conn.db.push("Profiles/" + username + "/Character", character.getDict())
+        clear()
+        character.show()
+        menu()
+    else:
+        print("Invalid Command")
+    command = input("&>> ").upper()
+
+conn.db.push("Profiles/" + username + "/Character", character.getDict())

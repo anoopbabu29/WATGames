@@ -3,8 +3,20 @@ import random
 class Lootbox():
     def __init__(self):
         self.var = "LB"
-        self.Weapon = ["name",[0,0,0,0]]
+        self.Weapon = ["name",[0,0,0,0,None]]
     
+    def getType(self):
+        val = randint(0,100)
+        if(val < 30):
+            s1 = random.choice(["S","X","L","M","A"])
+            s2 = random.choice(["S","X","L","M","A"])
+            while(s1 != s2):
+                s2 = random.choice(["S","X","L","M","A"])
+            return s1 + s2
+        else:
+            return random.choice(["S","X","L","M","A"])
+
+
     def WeaponName(self):
         file = open("test.txt", "r")
         contents = file.readlines()
@@ -23,10 +35,10 @@ class Lootbox():
 
         
     def WeaponStats(self):
-        Common = [0,0,0,0]
-        Rare = [1,1,1,1]
-        Epic = [3,3,3,3]
-        Legendary = [5,5,5,5]
+        Common = [0,0,0,0,None]
+        Rare = [1,1,1,1,None]
+        Epic = [3,3,3,3,None]
+        Legendary = [5,5,5,5,None]
         WeaponStats = ""
         if(self.val <= 59):
             WeaponStats = Common
@@ -38,10 +50,8 @@ class Lootbox():
             WeaponStats = Epic
         if(self.val == 100):
             WeaponStats = Legendary
+        WeaponStats[4] = self.getType()
         return WeaponStats
-
-
-
 
     def generate(self):
         self.val = randint(0,100)
@@ -58,18 +68,6 @@ class Lootbox():
         self.Weapon[1] = self.WeaponStats()
         return self.Weapon
     
-    
-
-
-    
-        
-
-
-
-
-#This is Test    
-LB = Lootbox()
-print(LB.generate())
 
 
 
