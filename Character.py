@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 
 #Colors
 red = "\033[31m"
@@ -51,7 +52,7 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 class Character():
-    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0), Health=40, Attack=40, Defense=40, Speed=40, Money=0, Stash=["Empty"], location=(None,None,None)):
+    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0), Health=40, Attack=40, Defense=40, Speed=15, Money=0, Stash=["Empty"], location=(None,None,None)):
         self.Name = Name
         self.Style = Style # S: Swordsman, X: Axeman, L: Lancer
         self.Weapon = Weapon
@@ -73,6 +74,9 @@ class Character():
         else:
             return chr(i + 55)
 
+    def getRange(self):
+        return int(math.floor(self.Speed/5))
+
     def show(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
         
@@ -80,6 +84,7 @@ class Character():
         print("[" + self.Style + ", " + self.Weapon + "]")
         print("\n\tHealth: " + str(self.Health) + "\tAttack: " + str(self.Attack))
         print("\tSpeed: " + str(self.Speed) + "\tDefense: " + str(self.Defense))
+        print("\tRange: " + str(self.getRange()))
         print()
         stash_str = "Stash: "
         for item in self.Stash:
@@ -90,7 +95,7 @@ class Character():
 
     def getStats(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
-        return "(" + self.num2chr(self.location[0]) + ", " + self.num2chr(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack) + " Speed: " + str(self.Speed) + " Defense: " + str(self.Defense)
+        return "(" + self.num2chr(self.location[0]) + ", " + self.num2chr(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack) + " Speed: " + str(self.Speed) + " Defense: " + str(self.Defense) + " Range: " + str(self.getRange())
   
     def getDict(self):
         return {
@@ -331,7 +336,7 @@ class Board():
 
     def attack(self,attacker,defender):
         damage = ((attacker.Attack + attacker.WeaponBonus[1]) - (defender.Defense + defender.WeaponBonus[2])) * self.bonus(attacker,defender)
-        defender.Health = int(defender.Health - damage)
+        defender.Health = int((defender.Health - damage) * math.floor(attacker.Speed/defender.Speed))
         return defender
 
        
@@ -415,4 +420,3 @@ while(ord(cIn) != 3):
     
     for char in team2:
         team1, team2, team2Moved = b.move(team1, team2, team2Moved, 2)
-    
