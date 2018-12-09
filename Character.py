@@ -223,12 +223,17 @@ class Board():
                 break
             elif(ord(ch) == 13):
                 #Pressed Enter
-                if(self.board[selPos[0]][selPos[1]] == (green + '*' + end) or self.board[selPos[0]][selPos[1]] == (green + team[l].Style + end)):
+                if(self.board[selPos[0]][selPos[1]] == (green + '*' + end)): 
                     self.board[team[l].location[0]][team[l].location[1]] = color + team[l].Style + end
                     self.board[selPos[0]][selPos[1]] = selChar
                     self.swap(team[l], selPos, color)
                     isMoved[l] = True
                     break
+                elif(self.board[selPos[0]][selPos[1]] == (green + team[l].Style + end)):
+                    self.board[team[l].location[0]][team[l].location[1]] = color + team[l].Style + end
+                    isMoved[l] = True
+                    break
+                    
             elif(ord(ch) == 119):
                 #Move Up if possible
                 if(selPos[0] - 1 >= 0):
