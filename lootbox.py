@@ -1,9 +1,41 @@
 from random import randint
 import random
+
+from collections import OrderedDict
+
 class Lootbox():
     def __init__(self):
         self.var = "LB"
         self.Weapon = ["name",[0,0,0,0,None]]
+
+    def write_roman(self,num):
+
+        roman = OrderedDict()
+        roman[1000] = "M"
+        roman[900] = "CM"
+        roman[500] = "D"
+        roman[400] = "CD"
+        roman[100] = "C"
+        roman[90] = "XC"
+        roman[50] = "L"
+        roman[40] = "XL"
+        roman[10] = "X"
+        roman[9] = "IX"
+        roman[5] = "V"
+        roman[4] = "IV"
+        roman[1] = "I"
+
+        def roman_num(num):
+            for r in roman.keys():
+                x, y = divmod(num, r)
+                yield roman[r] * x
+                num -= (r * x)
+                if num > 0:
+                    roman_num(num)
+                else:
+                    break
+
+        return "".join([a for a in roman_num(num)])
     
     def getType(self):
         val = randint(0,100)
@@ -18,18 +50,26 @@ class Lootbox():
 
 
     def WeaponName(self,type):
-        file = open("Names/test.txt", "r")
-        contents = file.readlines()
-        adjective = contents[0].split(", ")
-        name = contents[1].split(", ")
-        name2 = contents[2].split(", ")
+        file1 = open("Names/" + type[0] + ".txt", "r")
+        file2 = open("Names/adjectives.txt", "r")
+        file3 = open("Names/F.txt", "r")
+        contents1 = file1.readlines()
+        contents2 = file2.readlines()
+        contents3 = file3.readlines()
+        adjective = contents2
+        name = contents3
+        name2 = contents1
         WeaponName = "" 
         if(self.val <= 59): 
             full_name = random.choice(adjective)+" "+random.choice(name)
             WeaponName = full_name
         else:
-            full_name2 = random.choice(adjective)+" "+random.choice(name2)
-            WeaponName = full_name2
+            if(type[0] == "M" and self.val <= 80):
+                full_name2 = "Book " + random.choice([self.write_roman(random.randint(0,14)), self.write_roman(random.randint(0,667))]) + ": " + random.choice(name2)
+                WeaponName = full_name2
+            else:
+                full_name2 = random.choice(name2)
+                WeaponName = full_name2
         
         return WeaponName.replace("\n","")
 
@@ -108,7 +148,7 @@ class Lootbox():
         WeaponStats[4] = self.getType()
         return WeaponStats
 
-    def generate(self):
+    def generate(self,type=[None]):
         self.val = randint(0,100)
         if(self.val <= 59):
             print("You Got a Common Weapon!")
@@ -120,8 +160,9 @@ class Lootbox():
         if(self.val == 100):
             print("You Got a Legendary Weapon!")
         self.Weapon[1] = self.WeaponStats()
-        self.Weapon[0] = self.WeaponName(self.Weapon[1][4])
+        if(type[0]==None):
+            self.Weapon[0] = self.WeaponName(self.Weapon[1][4])
+        else:
+            self.Weapon[0] = self.WeaponName(type[0])
+            self.Weapon[1][4] = type
         return self.Weapon
-
-LB = Lootbox()
-print(LB.generate())

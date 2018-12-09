@@ -104,8 +104,7 @@ def begin(conn):
                 Good = input("Is this good (y/n)? ")
                 
             clear()
-            loot = LB.generate()
-            loot[1][4] = Style1 + Style2
+            loot = LB.generate(Style1 + Style2)
             print("You Got:",loot)
             print()
             input("type anything to coninue... ")
