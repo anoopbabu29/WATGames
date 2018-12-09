@@ -4,7 +4,7 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 class Character():
-    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0), Health=40, Attack=40, Defense=40, Speed=40, Money=0, Stash=["Empty"], location=(None,None,None)):
+    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0), Health=40, Attack=40, Defense=20, Speed=15, Money=0, Stash=["Empty"], location=(None,None,None)):
         self.Name = Name
         self.Style = Style # S: Swordsman, X: Axeman, L: Lancer
         self.Weapon = Weapon

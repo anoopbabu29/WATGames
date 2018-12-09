@@ -68,6 +68,11 @@ class Character():
 
         self.location = location
 
+    def getIcon(self):
+        if(len(self.Style) == 1):
+            return self.Style
+        return "&"
+
     def num2chr(self,i):
         if(i < 10):
             return str(i)
@@ -145,7 +150,7 @@ class Board():
     def swap(self,character,location2, color):
         c =  self.board[location2[0]][location2[1]]
         self.board[character.location[0]][character.location[1]] = character.location[2]
-        self.place(location2, color + character.Style + end)
+        self.place(location2, color + character.getIcon() + end)
         character.location = [location2[0], location2[1], c]
         return character
 
@@ -168,7 +173,7 @@ class Board():
         
         if(not isMoved[l]):
             character = team[l]
-            self.board[character.location[0]][character.location[1]] = yellow + character.Style + end
+            self.board[character.location[0]][character.location[1]] = yellow + character.getIcon() + end
 
             return character, l
         else:
@@ -189,7 +194,7 @@ class Board():
         selChar = self.board[team[l].location[0]][team[l].location[1]]
         
         while(True):
-            self.board[team[l].location[0]][team[l].location[1]] = green + team[l].Style + end
+            self.board[team[l].location[0]][team[l].location[1]] = green + team[l].getIcon() + end
             #print board
             clear()
             print()
@@ -218,13 +223,13 @@ class Board():
             if(ord(ch) == 3):
                 sys.exit(0)
             elif(ord(ch) == 27):
-                self.board[team[l].location[0]][team[l].location[1]] = yellow + team[l].Style + end
+                self.board[team[l].location[0]][team[l].location[1]] = yellow + team[l].getIcon() + end
                 self.board[selPos[0]][selPos[1]] = selChar
                 break
             elif(ord(ch) == 13):
                 #Pressed Enter
-                if(self.board[selPos[0]][selPos[1]] == (green + '*' + end) or self.board[selPos[0]][selPos[1]] == (green + team[l].Style + end)):
-                    self.board[team[l].location[0]][team[l].location[1]] = color + team[l].Style + end
+                if(self.board[selPos[0]][selPos[1]] == (green + '*' + end) or self.board[selPos[0]][selPos[1]] == (green + team[l].getIcon() + end)):
+                    self.board[team[l].location[0]][team[l].location[1]] = color + team[l].getIcon() + end
                     self.board[selPos[0]][selPos[1]] = selChar
                     self.swap(team[l], selPos, color)
                     isMoved[l] = True
@@ -305,10 +310,10 @@ class Board():
             ch = getch.__call__()
             #Left Input
             if(ch == 'a'):
-                self.board[selCharacter.location[0]][selCharacter.location[1]] = color + selCharacter.Style + end
+                self.board[selCharacter.location[0]][selCharacter.location[1]] = color + selCharacter.getIcon() + end
                 selCharacter, l = self.selChar(team, isMoved, (l), 0)
             elif(ch == 'd'):
-                self.board[selCharacter.location[0]][selCharacter.location[1]] = color + selCharacter.Style + end
+                self.board[selCharacter.location[0]][selCharacter.location[1]] = color + selCharacter.getIcon() + end
                 selCharacter, l = self.selChar(team, isMoved, (l + 1) , 1)
             #Select Char
             elif(ord(ch) == 13):
@@ -339,27 +344,67 @@ class Board():
         defender.Health = int((defender.Health - damage) * math.floor(attacker.Speed/defender.Speed))
         return defender
 
-       
-clear()
-b = Board()
+valid = "no"
+while(valid != 'Y'):      
+    clear()
+    b = Board()
+    print("\t* * * * * * * * * * * * *")
+    print("\t* * 1 * * * * * * * 4 * *")
+    print("\t* * * * 2 * * * 3 * * * *")
+    print("\t* * * * * * Y * * * * * *")
+    print("\t* * * * * * * * * * * * *")
+    print()
+    print("Type in 4 character string represented the team you want for battle in order of positon (See Above)")
+    print("([ex] \"ASXM\" for 1 Archer, 1 Swoardsmen, 1 Axeman, and 1 Mage)")
+    setup = input("Team: ").upper()
+    types = {'S','X','L','M','A'}
+    while(len(setup) != 4):
+        print("Invalid team command")
+        setup = input("Team: ").upper()
 
+    while(len(setup) != 4  or not ((setup[0] in types) and (setup[1] in types) and (setup[2] in types) and (setup[3] in types))):
+        print("Invalid team command")
+        setup = input("Team: ").upper()
+        while(len(setup) != 4):
+            print("Invalid team command")
+            setup = input("Team: ").upper()
+
+    print("\t* * * * * * * * * * * * *")
+    print("\t* * " + setup[0] + " * * * * * * * " + setup[3] + " * *")
+    print("\t* * * * " + setup[1] + " * * * " + setup[2] + " * * * *")
+    print("\t* * * * * * Y * * * * * *")
+    print("\t* * * * * * * * * * * * *")
+    print()
+    valid = input("Is this good (y/n)? ").upper()
 
 # Team 1
+team1 = [None, None, None, None, None]
 
-gm = Character("Generic Mage   ","M", Stash=["Book1","Book2","Book3"], Attack=70, location=(1,2,'*'))
-b.place(gm.location,red + "M" + end)
+i = 0
+locations = [(1,2,'*'),(2,4,'*'),(3,6,'*'),(2,8,'*'),(1,10,'*')]
+for c in setup:
+    if(c == "S"):
+        team1[i] = Character("Generic Swordsman","S", Stash=["Sword1","Sword2","Sword3"],location=locations[i])
+        b.place(team1[i].location,red + "S" + end)
+    if(c == "X"):
+        team1[i] = Character("Generic Axeman","X", Stash=["Axeman1","Axeman2","Axeman3"],location=locations[i])
+        b.place(team1[i].location,red + "X" + end)
+    if(c == "L"):
+        team1[i] = Character("Generic Lancer","L", Stash=["Lance1","Lance2","Lance3"],location=locations[i])
+        b.place(team1[i].location,red + "L" + end)
+    if(c == "M"):
+        team1[i] = Character("Generic Mage   ","M", Stash=["Book1","Book2","Book3"], location=locations[i])
+        b.place(team1[i].location,red + "M" + end)
+    if(c == "A"):
+        team1[i] = Character("Generic Archer","A", Stash=["Archer1","Archer2","Archer3"],location=locations[i])
+        b.place(team1[i].location,red + "A" + end)
 
-gs = Character("Generic Swordsman","S", Stash=["Sword1","Sword2","Sword3"],location=(2,4,'*'))
-b.place(gs.location,red + "S" + end)
+    i = i + 1
+    if(i == 2):
+        i = i + 1
 
-gx = Character("Generic Axeman","X", Stash=["Axeman1","Axeman2","Axeman3"],location=(3,6,'*'))
-b.place(gx.location,red + "X" + end)
-
-gl = Character("Generic Lancer","L", Stash=["Lance1","Lance2","Lance3"],location=(2,8,'*'))
-b.place(gl.location,red + "L" + end)
-
-ga = Character("Generic Archer","A", Stash=["Archer1","Archer2","Archer3"],location=(1,10,'*'))
-b.place(ga.location,red + "A" + end)
+team1[2] = Character("This is You","MX", Stash=["Book1","Book2","Book3"], Attack=70, location=locations[2])
+b.place(team1[2].location,red + "&" + end)
 
 
 # Team 2
@@ -379,7 +424,6 @@ b.place(gl2.location,blue + "L" + end)
 ga2 = Character("Generic Archer","A", Stash=["Archer1","Archer2","Archer3"],location=(12 - 1,10,'*'))
 b.place(ga2.location,blue + "A" + end)
 
-team1 = [gm, gs, gx, gl, ga]
 team2 = [gm2, gs2, gx2, gl2, ga2]
 
 #ga2 = b.attack(gm,ga2)
