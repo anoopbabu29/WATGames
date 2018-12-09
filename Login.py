@@ -408,7 +408,8 @@ while(command != 'Q' and command != 'QUIT'):
                 if(command.upper() != "Q" and command.upper() != "QUIT"):
                     success = getTrade({"Name":TWeapon,"WeaponBonus":TWeaponBonus},command)
                     if(success != -1):
-                        del character.Stash[TWeapon]
+                        if(TWeapon != "Empty"):
+                            del character.Stash[TWeapon]
                         character.Stash[success["Name"]] = {0:success["WeaponBonus"]["Health"],1:success["WeaponBonus"]["Attack"],2:success["WeaponBonus"]["Defense"],3:success["WeaponBonus"]["Speed"],4:success["WeaponBonus"]["Type"]}
                         character.Money = character.Money + success["Money"]
                         clear()
