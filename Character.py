@@ -55,7 +55,7 @@ class Character():
         self.Name = Name
         self.Style = Style # S: Swordsman, X: Axeman, L: Lancer
         self.Weapon = Weapon
-        self.WeaponBonus = WeaponBonus
+        self.WeaponBonus = WeaponBonus #(Health, Attack, Defense, Speed)
 
         self.Health = Health
         self.Attack = Attack
@@ -319,13 +319,29 @@ class Board():
         
         return team1, team2, isMoved
 
+    def bonus(self,attacker,defender):
+        bonus = 0
+        if(("S" in attacker.Style and "X" in defender.Style) or ("X" in attacker.Style and "L" in defender.Style) or ("L" in attacker.Style and "S" in defender.Style) or ("M" in attacker.Style and "A" in defender.Style) or ("A" in attacker.Style and "M" in defender.Style)):
+            bonus = bonus + 0.2
+
+        if(("X" in attacker.Style and "S" in defender.Style) or ("L" in attacker.Style and "X" in defender.Style) or ("S" in attacker.Style and "L" in defender.Style)):
+            bonus = bonus - 0.2
+        
+        return 1 + bonus
+
+    def attack(self,attacker,defender):
+        damage = ((attacker.Attack + attacker.WeaponBonus[1]) - (defender.Defense + defender.WeaponBonus[2])) * self.bonus(attacker,defender)
+        defender.Health = int(defender.Health - damage)
+        return defender
+
+       
 clear()
 b = Board()
 
 
 # Team 1
 
-gm = Character("Generic Mage   ","M", Stash=["Book1","Book2","Book3"],location=(1,2,'*'))
+gm = Character("Generic Mage   ","M", Stash=["Book1","Book2","Book3"], Attack=70, location=(1,2,'*'))
 b.place(gm.location,red + "M" + end)
 
 gs = Character("Generic Swordsman","S", Stash=["Sword1","Sword2","Sword3"],location=(2,4,'*'))
@@ -343,7 +359,7 @@ b.place(ga.location,red + "A" + end)
 
 # Team 2
 
-gm2 = Character("Generic Mage   ","M", Stash=["Book1","Book2","Book3"],location=(12 - 1,2,'*'))
+gm2 = Character("Generic Mage   ","M", Stash=["Book1","Book2","Book3"], location=(12 - 1,2,'*'))
 b.place(gm2.location,blue + "M" + end)
 
 gs2 = Character("Generic Swordsman","S", Stash=["Sword1","Sword2","Sword3"],location=(12 - 2,4,'*'))
@@ -361,6 +377,7 @@ b.place(ga2.location,blue + "A" + end)
 team1 = [gm, gs, gx, gl, ga]
 team2 = [gm2, gs2, gx2, gl2, ga2]
 
+#ga2 = b.attack(gm,ga2)
 print()
 b.show()
 print()
