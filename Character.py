@@ -10,7 +10,19 @@ red = "\033[31m"
 green = "\033[32m"
 yellow = "\033[33m"
 blue = "\033[36m"
+purple = "\033[35m"
+dblue = "\033[94m"
+lblue = "\033[96m"
 end = "\033[0m"
+
+GREY    = '\33[90m'
+CRED2    = '\33[91m'
+CGREEN2  = '\33[92m'
+CYELLOW2 = '\33[93m'
+CBLUE2   = '\33[94m'
+CVIOLET2 = '\33[95m'
+CBEIGE2  = '\33[96m'
+CWHITE2  = '\33[97m'
 
 class _Getch:
     """Gets a single character from standard input.  Does not echo to the
@@ -89,15 +101,15 @@ class Character():
     def show(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
         
-        print(self.Name + "\t\t$: " + str(self.Money))
-        print("[" + self.Style + ", " + self.Weapon + "]")
-        print("\n\tHealth: " + str(self.Health) + " + " + str(self.WeaponBonus[0]) + " \tAttack: " + str(self.Attack) + " + " + str(self.WeaponBonus[1]))
-        print("\tSpeed: " + str(self.Speed) + " + " + str(self.WeaponBonus[3])  + "\tDefense: " + str(self.Defense) + " + " + str(self.WeaponBonus[2]))
-        print("\tRange: " +  str(int(math.floor(self.Speed/5))) + " + " + str(self.getRange() - int(math.floor(self.Speed/5))))
+        print(CVIOLET2 + self.Name + end + "\t\t\t$: " + green + str(self.Money) + end)
+        print(GREY + "[" + self.Style + ", " + self.Weapon + "]" + end)
+        print(green + "\n\tHealth: " + end + str(self.Health) + " + " + str(self.WeaponBonus[0]) + red + " \tAttack: " + end + str(self.Attack) + " + " + str(self.WeaponBonus[1]))
+        print(yellow + "\tSpeed: " + end + str(self.Speed) + " + " + str(self.WeaponBonus[3])  + blue + "\tDefense: " + end + str(self.Defense) + " + " + str(self.WeaponBonus[2]))
+        print(purple + "\tRange: " + end + str(int(math.floor(self.Speed/5))) + " + " + str(self.getRange() - int(math.floor(self.Speed/5))))
         print()
-        stash_str = "Stash [Health, Attack, Defense, Speed, Type]: "
+        stash_str = GREY + "Stash: " + end
         for key, value in self.Stash.items():
-            stash_str = stash_str + key + " [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + ", " + str(value[3]) + ", " + str(value[4]) + "], "
+            stash_str = stash_str + key + " [" + green + str(value[0]) + end + ", " + red + str(value[1]) + end + ", " + blue + str(value[2]) + end + ", " + yellow + str(value[3]) + end +  ", " + str(value[4]) + "], "
         stash_str = stash_str
 
         print(stash_str[:-2])

@@ -4,6 +4,22 @@ from lootbox import Lootbox
 from uuid import getnode as get_mac
 import os
 
+#Colors
+red = "\033[31m"
+green = "\033[32m"
+yellow = "\033[33m"
+blue = "\033[36m"
+end = "\033[0m"
+
+GREY    = '\33[90m'
+CRED2    = '\33[91m'
+CGREEN2  = '\33[92m'
+CYELLOW2 = '\33[93m'
+CBLUE2   = '\33[94m'
+CVIOLET2 = '\33[95m'
+CBEIGE2  = '\33[96m'
+CWHITE2  = '\33[97m'
+
 LB = Lootbox()
 
 def clear():
