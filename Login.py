@@ -112,10 +112,10 @@ def begin(conn):
             WeaponBonus = (loot[1][0],loot[1][1],loot[1][2],loot[1][3],loot[1][4])
 
             #
-            pool = 35
+            pool = 30
             Health = 40
             Attack = 40
-            Defense = 20
+            Defense = 40
             Speed = 5
 
             clear()
@@ -408,8 +408,7 @@ while(command != 'Q' and command != 'QUIT'):
                 if(command.upper() != "Q" and command.upper() != "QUIT"):
                     success = getTrade({"Name":TWeapon,"WeaponBonus":TWeaponBonus},command)
                     if(success != -1):
-                        if(TWeapon != "Empty"):
-                            del character.Stash[TWeapon]
+                        del character.Stash[TWeapon]
                         character.Stash[success["Name"]] = {0:success["WeaponBonus"]["Health"],1:success["WeaponBonus"]["Attack"],2:success["WeaponBonus"]["Defense"],3:success["WeaponBonus"]["Speed"],4:success["WeaponBonus"]["Type"]}
                         character.Money = character.Money + success["Money"]
                         clear()

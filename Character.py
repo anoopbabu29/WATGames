@@ -159,6 +159,103 @@ class Board():
         character.location = [location2[0], location2[1], c]
         return character
 
+    
+
+    def bonus(self,attacker,defender):
+        bonus = 0
+        if(("S" in attacker.Style and "X" in defender.Style) or ("X" in attacker.Style and "L" in defender.Style) or ("L" in attacker.Style and "S" in defender.Style) or ("M" in attacker.Style and "A" in defender.Style) or ("A" in attacker.Style and "M" in defender.Style)):
+            bonus = bonus + 0.2
+
+        if(("X" in attacker.Style and "S" in defender.Style) or ("L" in attacker.Style and "X" in defender.Style) or ("S" in attacker.Style and "L" in defender.Style)):
+            bonus = bonus - 0.2
+        
+        return 1 + bonus
+
+    def attack(self,attacker,defender):
+        damage = ((attacker.Attack + attacker.WeaponBonus[1]) - (defender.Defense + defender.WeaponBonus[2])) * self.bonus(attacker,defender)
+        defender.Health = int((defender.Health - damage) * math.floor(attacker.Speed/defender.Speed))
+        return defender
+
+    def get_adjacent_cells(self, x_coord, y_coord, r):
+        result = {}
+        if(r == 1):
+            for x,y in [(x_coord+i,y_coord+j) for i in (-1,0,1) for j in (-1,0,1) if (i != 0 or j != 0) and (i == 0 or j == 0)]:
+                result[(x,y)] = True
+        elif(r == 2):
+            for x,y in [(x_coord+i,y_coord+j) for i in (-1,0,1) for j in (-1,0,1) if (i != 0 or j != 0) and (i == 0 or j == 0)]:
+                result[(x,y)] = True
+
+            temp = result.copy()
+            for key, value in temp.items():
+                x_coord = key[0]
+                y_coord = key[1]
+                for x,y in [(x_coord+i,y_coord+j) for i in (-1,0,1) for j in (-1,0,1) if (i != 0 or j != 0) and (i == 0 or j == 0)]:
+                    result[(x,y)] = True
+
+        return result
+
+    def inRadius(self, attacker, defender):
+        astyle = attacker.Style
+        if(len(attacker.Style) > 1):
+            astyle = attacker.EquipedStyle
+
+        if(astyle in {'S','X','L'}):
+            print((attacker.location, defender.location))
+            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],1)
+            if((defender.location[0],defender.location[1]) in attack_zone):
+                return True
+            else:
+                return False
+        
+        if(astyle in {'M'}):
+            print((attacker.location, defender.location))
+            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],2)
+            if((defender.location[0],defender.location[1]) in attack_zone):
+                return True
+            else:
+                return False
+
+        if(astyle in {'A'}):
+            print((attacker.location, defender.location))
+            print(2," -",1)
+            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],2)
+            close_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],1)
+            if(((defender.location[0],defender.location[1]) in attack_zone) and not ((defender.location[0],defender.location[1]) in close_zone)):
+                return True
+            else:
+                return False
+
+    def inAttackRadius(self,attacker,defender):
+        astyle = attacker.Style
+        if(len(attacker.Style) > 1):
+            astyle = attacker.EquipedStyle
+
+        if(astyle in {'S','X','L'}):
+            print((attacker.location, defender.location))
+            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],1)
+            if((defender.location[0],defender.location[1]) in attack_zone):
+                return self.attack(attacker,defender)
+            else:
+                return -1
+        
+        if(astyle in {'M'}):
+            print((attacker.location, defender.location))
+            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],2)
+            if((defender.location[0],defender.location[1]) in attack_zone):
+                return self.attack(attacker,defender)
+            else:
+                return -1
+
+        if(astyle in {'A'}):
+            print((attacker.location, defender.location))
+            print(2," -",1)
+            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],2)
+            close_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],1)
+            if(((defender.location[0],defender.location[1]) in attack_zone) and not ((defender.location[0],defender.location[1]) in close_zone)):
+                return self.attack(attacker,defender)
+            else:
+                return -1
+
     def selChar(self, team, isMoved, i, o):      
         l = -1
         
@@ -197,11 +294,6 @@ class Board():
         
         selPos = [team[l].location[0], team[l].location[1]]
         selChar = self.board[team[l].location[0]][team[l].location[1]]
-
-        
-        
-        
-
         
         while(True):
             self.board[team[l].location[0]][team[l].location[1]] = green + team[l].getIcon() + end
@@ -229,7 +321,7 @@ class Board():
 
             #Get Input
             ch = getch.__call__()
-            print(str(ch) + ": " + str(ord(ch)))
+            
             if(ord(ch) == 3):
                 sys.exit(0)
             elif(ord(ch) == 27):
@@ -290,7 +382,115 @@ class Board():
         
         return team1, team2, isMoved
 
+
+    def attackStep(self, team1, team2, teamNum, l):
+        ateam = []
+        dteam = []
+        if(teamNum == 1):
+            ateam = team1
+            dteam = team2
+            acolor = red
+            dcolor = blue
+        elif(teamNum == 2):
+            ateam = team2
+            dteam = team1
+            acolor = blue
+            dcolor = red
         
+        selPos = [ateam[l].location[0], ateam[l].location[1]]
+
+        selIndex = 0
+        inRadius = []
+        isNextTo = False
+        for i in range(len(dteam)):
+            if(self.inRadius(ateam[l], dteam[i])):
+                inRadius.append(dteam[i])
+                isNextTo = True
+            else:
+                inRadius.append(None)
+
+        if(isNextTo):
+            for i in range(len(inRadius)):
+                if(inRadius[i] != None):
+                    selIndex = i
+                    break
+            self.board[selPos[0]][selPos[1]] = green + ateam[l].getIcon() + end
+            self.board[dteam[selIndex].location[0]][dteam[selIndex].location[1]] = yellow + dteam[selIndex].getIcon() + end
+            self.board[ateam[l].location[0]][ateam[l].location[1]] = green + ateam[l].getIcon() + end
+        
+        while(isNextTo):
+            #print board
+            clear()
+            print()
+            self.show()
+            print()
+
+            print("{Team1}\n")
+            for i in range(len(team1)):
+                if(i == l and teamNum == 1):
+                    print(green + team1[i].getStats() + end)
+                elif(i == selIndex and teamNum == 2):
+                    print(yellow + team1[i].getStats() + end)
+                else:
+                    print(team1[i].getStats())
+            print()
+
+            print("{Team2}\n")
+            for i in range(len(team1)):
+                if(i == l and teamNum == 2):
+                    print(green + team2[i].getStats() + end)
+                elif(i == selIndex and teamNum == 1):
+                    print(yellow + team2[i].getStats() + end)
+                else:
+                    print(team2[i].getStats())
+            print()
+
+            #Get Input
+            ch = getch.__call__()
+            
+            if(ord(ch) == 3):
+                sys.exit(0)
+            elif(ord(ch) == 27):
+                self.board[dteam[selIndex].location[0]][dteam[selIndex].location[1]] = dcolor + dteam[selIndex].getIcon() + end
+                self.board[selPos[0]][selPos[1]] = acolor + ateam[l].getIcon() + end
+                break
+            elif(ord(ch) == 13):
+                #Pressed Enter
+                self.board[dteam[selIndex].location[0]][dteam[selIndex].location[1]] = dcolor + dteam[selIndex].getIcon() + end
+                self.board[ateam[l].location[0]][ateam[l].location[1]] = acolor + ateam[l].getIcon() + end
+                dteam[selIndex] = self.inAttackRadius(ateam[l], dteam[selIndex])
+                if(self.inRadius(dteam[selIndex], ateam[l])):
+                    ateam[l] = self.inAttackRadius(dteam[selIndex], ateam[l])
+                break
+
+            elif(ord(ch) == 97):
+                #Select Left
+                self.board[inRadius[selIndex].location[0]][inRadius[selIndex].location[1]] = dcolor + inRadius[selIndex].getIcon() + end
+                selIndex = selIndex - 1
+                if(selIndex == -1):
+                    selIndex = len(inRadius) - 1
+                while(inRadius[selIndex] == None):
+                    selIndex = selIndex - 1
+                    if(selIndex == -1):
+                        selIndex = len(inRadius) - 1
+                self.board[inRadius[selIndex].location[0]][inRadius[selIndex].location[1]] = yellow + inRadius[selIndex].getIcon() + end
+            elif(ord(ch) == 100):
+                #Select Right
+                self.board[inRadius[selIndex].location[0]][inRadius[selIndex].location[1]] = dcolor + inRadius[selIndex].getIcon() + end
+                selIndex = (selIndex + 1) % len(inRadius)
+                while(inRadius[selIndex] == None):
+                    selIndex = (selIndex + 1) % len(inRadius)
+                self.board[inRadius[selIndex].location[0]][inRadius[selIndex].location[1]] = yellow + inRadius[selIndex].getIcon() + end
+        
+        if(teamNum == 1):
+            team1 = ateam
+            team2 = dteam
+        elif(teamNum == 2):
+            team2 = ateam
+            team1 = dteam
+        
+        return team1, team2
+
 
     def move(self, team1, team2, isMoved, teamNum):
         team = []
@@ -338,6 +538,9 @@ class Board():
             elif(ord(ch) == 13):
                 #Actually move character
                 team1, team2, isMoved = self.moveChar(team1, team2, isMoved, teamNum, l)
+                if(isMoved[l]):
+                    print('Should Attack Now')
+                    team1, team2 = self.attackStep(team1, team2, teamNum, l)
             elif(ord(ch) == 3):
                 sys.exit(0)
         
@@ -347,67 +550,3 @@ class Board():
             team2 = team
         
         return team1, team2, isMoved
-
-    def bonus(self,attacker,defender):
-        bonus = 0
-        if(("S" in attacker.Style and "X" in defender.Style) or ("X" in attacker.Style and "L" in defender.Style) or ("L" in attacker.Style and "S" in defender.Style) or ("M" in attacker.Style and "A" in defender.Style) or ("A" in attacker.Style and "M" in defender.Style)):
-            bonus = bonus + 0.2
-
-        if(("X" in attacker.Style and "S" in defender.Style) or ("L" in attacker.Style and "X" in defender.Style) or ("S" in attacker.Style and "L" in defender.Style)):
-            bonus = bonus - 0.2
-        
-        return 1 + bonus
-
-    def attack(self,attacker,defender):
-        damage = ((attacker.Attack + attacker.WeaponBonus[1]) - (defender.Defense + defender.WeaponBonus[2])) * self.bonus(attacker,defender)
-        defender.Health = int((defender.Health - damage) * math.floor(attacker.Speed/defender.Speed))
-        return defender
-
-    def get_adjacent_cells(self, x_coord, y_coord, r):
-        result = {}
-        if(r == 1):
-            for x,y in [(x_coord+i,y_coord+j) for i in (-1,0,1) for j in (-1,0,1) if (i != 0 or j != 0) and (i == 0 or j == 0)]:
-                result[(x,y)] = True
-        elif(r == 2):
-            for x,y in [(x_coord+i,y_coord+j) for i in (-1,0,1) for j in (-1,0,1) if (i != 0 or j != 0) and (i == 0 or j == 0)]:
-                result[(x,y)] = True
-
-            temp = result.copy()
-            for key, value in temp.items():
-                x_coord = key[0]
-                y_coord = key[1]
-                for x,y in [(x_coord+i,y_coord+j) for i in (-1,0,1) for j in (-1,0,1) if (i != 0 or j != 0) and (i == 0 or j == 0)]:
-                    result[(x,y)] = True
-
-        return result
-
-    def inAttackRadius(self,attacker,defender):
-        astyle = attacker.Style
-        if(len(attacker.Style) > 1):
-            astyle = attacker.EquipedStyle
-
-        if(astyle in {'S','X','L'}):
-            print((attacker.location, defender.location))
-            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],1)
-            if((defender.location[0],defender.location[1]) in attack_zone):
-                return self.attack(attacker,defender)
-            else:
-                return -1
-        
-        if(astyle in {'M'}):
-            print((attacker.location, defender.location))
-            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],2)
-            if((defender.location[0],defender.location[1]) in attack_zone):
-                return self.attack(attacker,defender)
-            else:
-                return -1
-
-        if(astyle in {'M'}):
-            print((attacker.location, defender.location))
-            print(2," -",1)
-            attack_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],2)
-            close_zone = self.get_adjacent_cells(attacker.location[0],attacker.location[1],1)
-            if(((defender.location[0],defender.location[1]) in attack_zone) and not ((defender.location[0],defender.location[1]) in close_zone)):
-                return self.attack(attacker,defender)
-            else:
-                return -1
