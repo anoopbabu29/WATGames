@@ -193,6 +193,11 @@ class Board():
         
         selPos = [team[l].location[0], team[l].location[1]]
         selChar = self.board[team[l].location[0]][team[l].location[1]]
+
+        
+        
+        
+
         
         while(True):
             self.board[team[l].location[0]][team[l].location[1]] = green + team[l].getIcon() + end
@@ -235,14 +240,15 @@ class Board():
                     self.swap(team[l], selPos, color)
                     isMoved[l] = True
                     break
-                elif(self.board[selPos[0]][selPos[1]] == (green + team[l].Style + end)):
-                    self.board[team[l].location[0]][team[l].location[1]] = color + team[l].Style + end
+                elif(self.board[selPos[0]][selPos[1]] == (green + team[l].getIcon() + end)):
+                    self.board[team[l].location[0]][team[l].location[1]] = color + team[l].getIcon() + end
                     isMoved[l] = True
                     break
                     
             elif(ord(ch) == 119):
                 #Move Up if possible
-                if(selPos[0] - 1 >= 0):
+                dist = abs((selPos[0] - 1) - team[l].location[0]) + abs((selPos[1]) - team[l].location[1])
+                if(selPos[0] - 1 >= 0 and dist <= team[l].getRange()):
                     self.board[selPos[0]][selPos[1]] = selChar
                     selPos = [selPos[0] - 1, selPos[1]]
                     selChar = self.board[selPos[0]][selPos[1]]
@@ -250,21 +256,24 @@ class Board():
 
             elif(ord(ch) == 97):
                 #Move Left if possible
-                if(selPos[1] - 1 >= 0):
+                dist = abs((selPos[0]) - team[l].location[0]) + abs((selPos[1] - 1) - team[l].location[1])
+                if(selPos[1] - 1 >= 0 and dist <= team[l].getRange()):
                     self.board[selPos[0]][selPos[1]] = selChar
                     selPos = [selPos[0], selPos[1] - 1]
                     selChar = self.board[selPos[0]][selPos[1]]
                     self.board[selPos[0]][selPos[1]] = green + selChar + end
             elif(ord(ch) == 115):
                 #Move Down if possible
-                if(selPos[0] + 1 <= len(self.board) - 1):
+                dist = abs((selPos[0] + 1) - team[l].location[0]) + abs((selPos[1]) - team[l].location[1])
+                if(selPos[0] + 1 <= (len(self.board) - 1) and dist <= team[l].getRange()):
                     self.board[selPos[0]][selPos[1]] = selChar
                     selPos = [selPos[0] + 1, selPos[1]]
                     selChar = self.board[selPos[0]][selPos[1]]
                     self.board[selPos[0]][selPos[1]] = green + selChar + end
             elif(ord(ch) == 100):
                 #Move Right if possible
-                if(selPos[1] + 1 <= len(self.board[selPos[0]]) - 1):
+                dist = abs((selPos[0]) - team[l].location[0]) + abs((selPos[1] + 1) - team[l].location[1])
+                if((selPos[1] + 1 <= len(self.board[selPos[0]]) - 1) and dist <= team[l].getRange()):
                     self.board[selPos[0]][selPos[1]] = selChar
                     selPos = [selPos[0], selPos[1] + 1]
                     selChar = self.board[selPos[0]][selPos[1]]
