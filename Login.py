@@ -112,10 +112,10 @@ def begin(conn):
             WeaponBonus = (loot[1][0],loot[1][1],loot[1][2],loot[1][3],loot[1][4])
 
             #
-            pool = 30
+            pool = 35
             Health = 40
             Attack = 40
-            Defense = 40
+            Defense = 20
             Speed = 5
 
             clear()
