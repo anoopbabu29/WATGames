@@ -384,25 +384,31 @@ while(valid != 'Y'):
 
 # Team 1
 team1 = [None, None, None, None, None]
+increments = [1,1,1,1,1]
 
 i = 0
 locations = [(1,2,'*'),(2,4,'*'),(3,6,'*'),(2,8,'*'),(1,10,'*')]
 for c in setup:
     if(c == "S"):
-        team1[i] = Character("Generic Swordsman","S", Stash=["Sword1","Sword2","Sword3"],location=locations[i])
+        team1[i] = Character("Generic Swordsman " + str(increments[0]),"S", Stash=["Sword1","Sword2","Sword3"],location=locations[i])
         b.place(team1[i].location,red + "S" + end)
+        increments[0] = increments[0] + 1
     if(c == "X"):
-        team1[i] = Character("Generic Axeman","X", Stash=["Axeman1","Axeman2","Axeman3"],location=locations[i])
+        team1[i] = Character("Generic Axeman " + str(increments[1]),"X", Stash=["Axeman1","Axeman2","Axeman3"],location=locations[i])
         b.place(team1[i].location,red + "X" + end)
+        increments[1] = increments[1] + 1
     if(c == "L"):
-        team1[i] = Character("Generic Lancer","L", Stash=["Lance1","Lance2","Lance3"],location=locations[i])
+        team1[i] = Character("Generic Lancer " + str(increments[2]),"L", Stash=["Lance1","Lance2","Lance3"],location=locations[i])
         b.place(team1[i].location,red + "L" + end)
+        increments[2] = increments[2] + 1
     if(c == "M"):
-        team1[i] = Character("Generic Mage   ","M", Stash=["Book1","Book2","Book3"], location=locations[i])
+        team1[i] = Character("Generic Mage   " + str(increments[3]),"M", Stash=["Book1","Book2","Book3"], location=locations[i])
         b.place(team1[i].location,red + "M" + end)
+        increments[3] = increments[3] + 1
     if(c == "A"):
-        team1[i] = Character("Generic Archer","A", Stash=["Archer1","Archer2","Archer3"],location=locations[i])
+        team1[i] = Character("Generic Archer " + str(increments[4]),"A", Stash=["Archer1","Archer2","Archer3"],location=locations[i])
         b.place(team1[i].location,red + "A" + end)
+        increments[4] = increments[4] + 1
 
     i = i + 1
     if(i == 2):
