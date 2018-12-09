@@ -1,5 +1,6 @@
 from Multiplayer.Multiplayer import Database
 from character_class import Character
+from uuid import getnode as get_mac
 import os
 
 def clear():
@@ -22,8 +23,12 @@ class LoginConnection():
         for key, value in links.items():
             if(key == username):
                 return -1
+            if(value != "base"):
+                if(value["Address"] == str(get_mac())):
+                    print("Error 666: Computer is trying to create multiple accounts")
+                    return -1
         self.db.push("Profiles/" + username, character.getDict())
-        self.db.push("Profiles/" + username, {"Character": character.getDict(), "password": password})
+        self.db.push("Profiles/" + username, {"Character": character.getDict(), "password": password, "Address":str(get_mac())})
         return 1
 
     def dict2Character(self,d):
@@ -108,19 +113,19 @@ def begin(conn):
 
             clear()
             while(pool != 0):
-                print("Enter a valid number points and a stat to increase or decease until all points are used")
+                print("Enter a stat and a valid number points to increase or decease it by until all points are used")
                 print("Total Points Left:\n\n" + "\t" + str(pool) + "\n")
                 print("[" + Style1 + ", " + Style2 + "] " + Name + "\t| Health: " + str(Health) + " Attack: " + str(Attack) + " Speed: " + str(Speed) + " Defense: " + str(Defense))
                 print()
-                value = int(input("Points: "))
-                while(value > pool):
-                    print("Invalid point amount you have " + str(pool) + " points left")
-                    value = int(input("Points: "))
-
                 stat = input("Stat: ").upper()
                 while(not (stat in {'H','A','D','S'})):
                     print("Invalid stat enter (h, a, d, s) for (Health, Attack, Defense, Speed) respectively")
                     stat = input("Stat: ").upper()
+
+                value = int(input("Points: "))
+                while(value > pool):
+                    print("Invalid point amount you have " + str(pool) + " points left")
+                    value = int(input("Points: "))
 
                 clear()
                 if(stat == 'H'):
