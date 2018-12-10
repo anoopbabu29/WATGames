@@ -492,11 +492,17 @@ def JoinFight(character):
                 for c in team1:
                     print(c.getStats())
                 print()
+                if(not team1[int(len(team1)/2)].isAlive()):
+                    team1Win = True
+                    break
 
             if(not(None in team2)):
                 print("{Team2}\n")
                 for c in team2:
                     print(c.getStats())
+                if(not team2[int(len(team2)/2)].isAlive()):
+                    team2Win = True
+                    break
 
             print()
             connection.waitTurn(roomName,positon)
@@ -709,11 +715,17 @@ def StartFight(character):
                 for c in team1:
                     print(c.getStats())
                 print()
+                if(not team1[int(len(team1)/2)].isAlive()):
+                    team1Win = True
+                    break
 
             if(not(None in team2)):
                 print("{Team2}\n")
                 for c in team2:
                     print(c.getStats())
+                if(not team2[int(len(team2)/2)].isAlive()):
+                    team2Win = True
+                    break
 
             print()
             connection.waitTurn(roomName,1)
