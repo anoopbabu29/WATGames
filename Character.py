@@ -151,6 +151,14 @@ class Board():
         for i in range(self.size):
             self.board.append(['*']*self.size)
 
+    def board2dict(self,team1,team2):
+        board = {
+            "Board": board,
+            "Team1": {},
+            "Team2": {}
+        }
+        return board
+
     def num2chr(self,i):
         if(i < 10):
             return str(i)
