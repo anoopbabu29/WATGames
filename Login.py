@@ -130,10 +130,10 @@ def begin(conn):
             WeaponBonus = (loot[1][0],loot[1][1],loot[1][2],loot[1][3],loot[1][4])
 
             #
-            pool = 35
+            pool = 30
             Health = 40
             Attack = 40
-            Defense = 20
+            Defense = 40
             Speed = 5
 
             clear()
@@ -417,6 +417,16 @@ def SelectionMenu():
                         character.Weapon = command
                         character.WeaponBonus = (character.Stash[command][0],character.Stash[command][1],character.Stash[command][2],character.Stash[command][3],character.Stash[command][4])
                         del character.Stash[command]
+                TWeapon = command
+                TWeaponBonus = {"Health":character.Stash[command][0],"Attack":character.Stash[command][1],"Defense":character.Stash[command][2],"Speed":character.Stash[command][3],"Type":character.Stash[command][4]}
+                #print("Type the details of the item/price you are looking for")
+                #command = input("&>> ")
+                if(command.upper() != "Q" and command.upper() != "QUIT"):
+                    success = getTrade({"Name":TWeapon,"WeaponBonus":TWeaponBonus},command)
+                    if(success != -1):
+                        del character.Stash[TWeapon]
+                        character.Stash[success["Name"]] = {0:success["WeaponBonus"]["Health"],1:success["WeaponBonus"]["Attack"],2:success["WeaponBonus"]["Defense"],3:success["WeaponBonus"]["Speed"],4:success["WeaponBonus"]["Type"]}
+                        character.Money = character.Money + success["Money"]
                         clear()
                         character.show()
                         menu()
