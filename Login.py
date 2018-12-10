@@ -524,11 +524,17 @@ def JoinFight(character):
             print("{Team1}\n")
             for c in team1:
                 print(c.getStats())
+            if(not team1[int(len(team1)/2)].isAlive()):
+                team1Win = True
+                break
             print()
 
             print("{Team2}\n")
             for c in team2:
                 print(c.getStats())
+            if(not team2[int(len(team2)/2)].isAlive()):
+                team2Win = True
+                break
 
             print()
             
@@ -749,11 +755,17 @@ def StartFight(character):
             print("{Team1}\n")
             for c in team1:
                 print(c.getStats())
+            if(not team1[int(len(team1)/2)].isAlive()):
+                    team1Win = True
+                    break
             print()
 
             print("{Team2}\n")
             for c in team2:
                 print(c.getStats())
+            if(not team2[int(len(team2)/2)].isAlive()):
+                    team2Win = True
+                    break
 
             print()
             
