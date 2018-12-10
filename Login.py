@@ -769,7 +769,7 @@ def StartFight(character):
             print(c.getStats())
         print()
     except:
-            pass
+        pass
 
     if(team2Win):
         print("You Win")
