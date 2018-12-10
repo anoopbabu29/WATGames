@@ -8,21 +8,21 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def dict2Character(d):
-        name = d["Name"]
-        style = d["Style"]
-        weapon = d["Weapon"]["Name"]
-        weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
-        maxhealth = d["MaxHealth"]
-        health = d["Health"]
-        attack = d["Attack"]
-        defense = d["Defense"]
-        speed = d["Speed"]
-        money = d["Money"]
-        stash = d["Stash"]
-        character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
-        character.MaxHealth = maxhealth
+    name = d["Name"]
+    style = d["Style"]
+    weapon = d["Weapon"]["Name"]
+    weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
+    maxhealth = d["MaxHealth"]
+    health = d["Health"]
+    attack = d["Attack"]
+    defense = d["Defense"]
+    speed = d["Speed"]
+    money = d["Money"]
+    stash = d["Stash"]
+    character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
+    character.MaxHealth = maxhealth
 
-        return character
+    return character
 
 def dict2Board(d):
     board = Board(size=len(d["Board"]),board=d["Board"])

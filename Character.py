@@ -62,7 +62,7 @@ class _GetchWindows:
 getch = _Getch()
 
 class Character():
-    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0,"SXLMA"), Health=40, Attack=40, Defense=20, Speed=5, Money=0, Stash={"Empty":{0:0,1:0,2:0,3:0,4:"SXLMA"}}, location=(None,None,None)):
+    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0,"SXLMA"), Health=40, Attack=40, Defense=20, Speed=5, Money=0, Stash={"Empty":{0:0,1:0,2:0,3:0,4:"SXLMA"}}, location=[None,None,None]):
         self.Name = Name
         self.Style = Style # S: Swordsman, X: Axeman, L: Lancer
         self.EquipedStyle = None
@@ -146,7 +146,7 @@ class Character():
             "Speed" : self.Speed,
             "Money" : self.Money,
             "Stash" : self.Stash,
-            "location" : {"0" : self.location[0], "1" : self.location[1], "2" : self.location[2]}
+            "location" : {0 : self.location[0], 1 : self.location[1], 2 : self.location[2]}
         }
 
 class Board():
@@ -165,12 +165,18 @@ class Board():
         }
         index = 0
         for character in team1:
-            board["Team1"][index] = character.getDict()
+            if(character == None):
+                board["Team1"][index] = "Empty"
+            else:
+                board["Team1"][index] = character.getDict()
             index = index + 1
 
         index = 0
         for character in team2:
-            board["Team2"][index] = character.getDict()
+            if(character == None):
+                board["Team2"][index] = "Empty"
+            else:
+                board["Team2"][index] = character.getDict()
             index = index + 1
         return board
 
@@ -311,7 +317,7 @@ class Board():
                 break
         
         if(l == -1):
-            return None
+            return team[0], 0
         
         if(not isMoved[l]):
             character = team[l]
@@ -319,7 +325,7 @@ class Board():
 
             return character, l
         else:
-            return None
+            return team[0], 0
 
 
     def moveChar(self, team1, team2, isMoved, teamNum, l):
