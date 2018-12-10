@@ -133,7 +133,7 @@ def begin(conn):
             pool = 30
             Health = 40
             Attack = 40
-            Defense = 40
+            Defense = 20
             Speed = 5
 
             clear()
@@ -324,202 +324,214 @@ def joinTrade(item):
 
 conn = LoginConnection()
 info = begin(conn)
-character = info[0]
-username = info[1]
-if(character == -1):
-    quit()
 
-def menu():
-    print("Commands:")
-    print("\tHeal - Spend $100 to increase health")
-    print("\tBuy - Spend $1000 to get new Weapon")
-    print("\tFight - Start 1v1 Battle with friend")
-    print("\tEquip - Equip Weapon from stash")
-    print("\tTrade [Unstable] - Weapons from stash via Room Names")
-    print("\tClear - Clear Menu")
-    print("\tSave - Save progress")
-    print("\tQuit - Quit Menu")
+def SelectionMenu():
+    character = info[0]
+    username = info[1]
+    if(character == -1):
+        quit()
 
-menu()
-command = input("&>> ").upper()
-while(command != 'Q' and command != 'QUIT'):
-    if(command == 'HEAL'):
-        print("Are sure you want to spend $100 to increase health to " + str(character.MaxHealth) + "? (y/n)")
-        command = input("&>> ").upper()
-        if(character.Money >= 100):
-            if(character.Health < character.MaxHealth):
-                if(command == 'Y'):
-                    character.Money = character.Money - 100
-                    character.Health = character.MaxHealth
-                    print("You are successfully healed")
-                    print()
-                    input("type anything to coninue... ")
-                    conn.db.push("Profiles/" + username + "/Character", character.getDict())
-                    clear()
-                    character.show()
-                    menu()
-            else:
-                print("You are already at Max Health")
-        else:
-            print("You do not have enough money")
-    if(command == 'BUY'):
-        print("Are sure you want to spend $1000 on a new Weapon? (y/n)")
-        command = input("&>> ").upper()
-        if(character.Money >= 1000):
-            if(command == 'Y'):
-                new_weapon = False
-                Weapon = None
-                while(new_weapon == False):
-                    Weapon = LB.generate()
-                    #print(Weapon)
-                    new_weapon = True
-                    for key, value in character.Stash.items():
-                        if(key == Weapon[0]):
-                            new_weapon = False
-                character.Money = character.Money - 1000
-                print("You Got:",Weapon)
-                print()
-                character.Stash[Weapon[0]] = {0:Weapon[1][0],1:Weapon[1][1],2:Weapon[1][2],3:Weapon[1][3],4:Weapon[1][4]}
-                conn.db.push("Profiles/" + username + "/Character", character.getDict())
-                input("type anything to coninue... ")
-                clear()
-                character.show()
-                menu()
-        else:
-            print("You do not have enough money")
-    elif(command == 'FIGHT'):
-        print("Not Ready yet")
-    elif(command == 'EQUIP'):
-        weapon = False
-        print("Type the name of the item you want to equiped")
-        command = input("&>> ")
-        for key, value in character.Stash.items():
-            if(key == command):
-                weapon = True
-        while(weapon == False and command.upper() != "Q" and command.upper() != "QUIT"):
-            print("Item not found. Type the name of the item you want to equiped")
-            command = input("&>> ")
-            for key, value in character.Stash.items():
-                if(key == command):
-                    weapon = True
+    if(character.Health + character.WeaponBonus[0] <= 0):
+        print("You Died")
+        conn.db.delete("Profiles/" + username)
+        quit()
 
-        if(command.upper() != "Q" and command.upper() != "QUIT"):
-            if(character.Style[0] in character.Stash[command][4] or character.Style[1] in character.Stash[command][4]):
-                if(character.Health + character.Stash[command][0] > 0 and character.Attack + character.Stash[command][1] > 0 and character.Defense + character.Stash[command][2] > 0 and character.Speed + character.Stash[command][3] > 0):
-                    character.Stash[character.Weapon] = {0:character.WeaponBonus[0],1:character.WeaponBonus[1],2:character.WeaponBonus[2],3:character.WeaponBonus[3],4:character.WeaponBonus[4]}
-                    character.Weapon = command
-                    character.WeaponBonus = (character.Stash[command][0],character.Stash[command][1],character.Stash[command][2],character.Stash[command][3],character.Stash[command][4])
-                    del character.Stash[command]
-                    clear()
-                    character.show()
-                    menu()
+    def menu():
+        print("Commands:")
+        print("\tHeal - Spend $100 to increase health")
+        print("\tBuy - Spend $1000 to get new Weapon")
+        print("\tFight - Start 1v1 Battle with friend")
+        print("\tEquip - Equip Weapon from stash")
+        print("\tTrade [Unstable] - Weapons from stash via Room Names")
+        print("\tClear - Clear Menu")
+        print("\tSave - Save progress")
+        print("\tQuit - Quit Menu")
+
+    menu()
+    command = input("&>> ").upper()
+    while(command != 'Q' and command != 'QUIT'):
+        if(command == 'HEAL'):
+            print("Are sure you want to spend $100 to increase health to " + str(character.MaxHealth) + "? (y/n)")
+            command = input("&>> ").upper()
+            if(character.Money >= 100):
+                if(character.Health < character.MaxHealth):
+                    if(command == 'Y'):
+                        character.Money = character.Money - 100
+                        character.Health = character.MaxHealth
+                        print("You are successfully healed")
+                        print()
+                        input("type anything to coninue... ")
+                        conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                        clear()
+                        character.show()
+                        menu()
                 else:
-                    print("This item cannot make one of your stats less than 1")
+                    print("You are already at Max Health")
             else:
-                print("Item cannot be equiped with your style")
-    elif(command == 'TRADE'):
-        print("Type in s to start trade or j to join trade via Room Name")
-        command = input("&>> ")
-        while(command.upper() != 'Q' and command.upper() != 'S' and command.upper() != 'J'):
-            print("Invalid Command. Type in s to start trade or j to join trade via Room Name")
-            command = input("&>> ")
-
-        if(command.upper() == "S"):
+                print("You do not have enough money")
+        if(command == 'BUY'):
+            print("Are sure you want to spend $1000 on a new Weapon? (y/n)")
+            command = input("&>> ").upper()
+            if(character.Money >= 1000):
+                if(command == 'Y'):
+                    new_weapon = False
+                    Weapon = None
+                    while(new_weapon == False):
+                        Weapon = LB.generate()
+                        #print(Weapon)
+                        new_weapon = True
+                        for key, value in character.Stash.items():
+                            if(key == Weapon[0]):
+                                new_weapon = False
+                    character.Money = character.Money - 1000
+                    print("You Got:",Weapon)
+                    print()
+                    character.Stash[Weapon[0]] = {0:Weapon[1][0],1:Weapon[1][1],2:Weapon[1][2],3:Weapon[1][3],4:Weapon[1][4]}
+                    conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                    input("type anything to coninue... ")
+                    clear()
+                    character.show()
+                    menu()
+            else:
+                print("You do not have enough money")
+        elif(command == 'FIGHT'):
+            print("Not Ready yet")
+        elif(command == 'EQUIP'):
             weapon = False
-            print("Type the name of the item you want to trade")
+            print("Type the name of the item you want to equiped")
             command = input("&>> ")
             for key, value in character.Stash.items():
                 if(key == command):
                     weapon = True
             while(weapon == False and command.upper() != "Q" and command.upper() != "QUIT"):
-                print("Item not found. Type the name of the item you want to trade")
+                print("Item not found. Type the name of the item you want to equiped")
                 command = input("&>> ")
                 for key, value in character.Stash.items():
                     if(key == command):
                         weapon = True
 
             if(command.upper() != "Q" and command.upper() != "QUIT"):
-                TWeapon = command
-                TWeaponBonus = {"Health":character.Stash[command][0],"Attack":character.Stash[command][1],"Defense":character.Stash[command][2],"Speed":character.Stash[command][3],"Type":character.Stash[command][4]}
-                #print("Type the details of the item/price you are looking for")
-                #command = input("&>> ")
-                if(command.upper() != "Q" and command.upper() != "QUIT"):
-                    success = getTrade({"Name":TWeapon,"WeaponBonus":TWeaponBonus},command)
-                    if(success != -1):
-                        del character.Stash[TWeapon]
-                        character.Stash[success["Name"]] = {0:success["WeaponBonus"]["Health"],1:success["WeaponBonus"]["Attack"],2:success["WeaponBonus"]["Defense"],3:success["WeaponBonus"]["Speed"],4:success["WeaponBonus"]["Type"]}
-                        character.Money = character.Money + success["Money"]
+                if(character.Style[0] in character.Stash[command][4] or character.Style[1] in character.Stash[command][4]):
+                    if(character.Health + character.Stash[command][0] > 0 and character.Attack + character.Stash[command][1] > 0 and character.Defense + character.Stash[command][2] > 0 and character.Speed + character.Stash[command][3] > 0):
+                        character.Stash[character.Weapon] = {0:character.WeaponBonus[0],1:character.WeaponBonus[1],2:character.WeaponBonus[2],3:character.WeaponBonus[3],4:character.WeaponBonus[4]}
+                        character.Weapon = command
+                        character.WeaponBonus = (character.Stash[command][0],character.Stash[command][1],character.Stash[command][2],character.Stash[command][3],character.Stash[command][4])
+                        del character.Stash[command]
                         clear()
                         conn.db.push("Profiles/" + username + "/Character", character.getDict())
                         character.show()
                         menu()
-                    else:
-                        clear()
-                        print()
-                        print("Trade was unsuccessful")   
-                        print()
-                        conn.db.push("Profiles/" + username + "/Character", character.getDict())
-                        character.show()
-                        menu()  
 
-        if(command.upper() == "J"):
-            weapon = False
-            print("Type the name of the item you want to trade or n for None")
+                    else:
+                        print("This item cannot make one of your stats less than 1")
+                else:
+                    print("Item cannot be equiped with your style")
+        elif(command == 'TRADE'):
+            print("Type in s to start trade or j to join trade via Room Name")
             command = input("&>> ")
-            for key, value in character.Stash.items():
-                if(key == command):
-                    weapon = True
-            while(weapon == False and command.upper() != "N"  and command.upper() != "Q" and command.upper() != "QUIT"):
-                print("Item not found. Type the name of the item you want to trade or n for None")
+            while(command.upper() != 'Q' and command.upper() != 'S' and command.upper() != 'J'):
+                print("Invalid Command. Type in s to start trade or j to join trade via Room Name")
+                command = input("&>> ")
+
+            if(command.upper() == "S"):
+                weapon = False
+                print("Type the name of the item you want to trade")
                 command = input("&>> ")
                 for key, value in character.Stash.items():
                     if(key == command):
                         weapon = True
+                while(weapon == False and command.upper() != "Q" and command.upper() != "QUIT"):
+                    print("Item not found. Type the name of the item you want to trade")
+                    command = input("&>> ")
+                    for key, value in character.Stash.items():
+                        if(key == command):
+                            weapon = True
 
-            if(command.upper() != "Q" and command.upper() != "QUIT"):
-                TWeapon = "Empty"
-                TWeaponBonus = {"Health":0,"Attack":0,"Defense":0,"Speed":0,"Type":"SXLMA"}
-                if(command.upper() != "N"):
+                if(command.upper() != "Q" and command.upper() != "QUIT"):
                     TWeapon = command
                     TWeaponBonus = {"Health":character.Stash[command][0],"Attack":character.Stash[command][1],"Defense":character.Stash[command][2],"Speed":character.Stash[command][3],"Type":character.Stash[command][4]}
-                print("Type the amount you want to trade")
+                    #print("Type the details of the item/price you are looking for")
+                    #command = input("&>> ")
+                    if(command.upper() != "Q" and command.upper() != "QUIT"):
+                        success = getTrade({"Name":TWeapon,"WeaponBonus":TWeaponBonus},command)
+                        if(success != -1):
+                            if(TWeapon != "Empty"):
+                                del character.Stash[TWeapon]
+                            character.Stash[success["Name"]] = {0:success["WeaponBonus"]["Health"],1:success["WeaponBonus"]["Attack"],2:success["WeaponBonus"]["Defense"],3:success["WeaponBonus"]["Speed"],4:success["WeaponBonus"]["Type"]}
+                            character.Money = character.Money + success["Money"]
+                            clear()
+                            conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                            character.show()
+                            menu()
+                        else:
+                            clear()
+                            print()
+                            print("Trade was unsuccessful")   
+                            print()
+                            conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                            character.show()
+                            menu()  
+
+            if(command.upper() == "J"):
+                weapon = False
+                print("Type the name of the item you want to trade or n for None")
                 command = input("&>> ")
-                while(int(command) > character.Money or int(command) < 0):
-                    print("Invalid amount. Type the amount you want to trade (amount cannot be negative)")
-                    print("You have $" + str(character.Money))
+                for key, value in character.Stash.items():
+                    if(key == command):
+                        weapon = True
+                while(weapon == False and command.upper() != "N"  and command.upper() != "Q" and command.upper() != "QUIT"):
+                    print("Item not found. Type the name of the item you want to trade or n for None")
                     command = input("&>> ")
+                    for key, value in character.Stash.items():
+                        if(key == command):
+                            weapon = True
 
                 if(command.upper() != "Q" and command.upper() != "QUIT"):
-                    success = joinTrade({"Name":TWeapon,"WeaponBonus":TWeaponBonus,"Money":int(command)})
-                    print({"Name":TWeapon,"WeaponBonus":TWeaponBonus,"Money":0})
-                    if(success != -1):
-                        if(TWeapon != "Empty"):
-                            del character.Stash[TWeapon]
-                        character.Stash[success["Name"]] = {0:success["WeaponBonus"]["Health"],1:success["WeaponBonus"]["Attack"],2:success["WeaponBonus"]["Defense"],3:success["WeaponBonus"]["Speed"],4:success["WeaponBonus"]["Type"]}
-                        character.Money = character.Money - int(command)
-                        clear()
-                        conn.db.push("Profiles/" + username + "/Character", character.getDict())
-                        character.show()
-                        menu()
-                    else:
-                        clear()
-                        print()
-                        print("Trade was unsuccessful")   
-                        print()
-                        conn.db.push("Profiles/" + username + "/Character", character.getDict())
-                        character.show()
-                        menu()  
-    elif(command == 'CLEAR'):
-        clear()
-        character.show()
-        menu()
-    elif(command == 'SAVE'):
-        conn.db.push("Profiles/" + username + "/Character", character.getDict())
-        clear()
-        character.show()
-        menu()
-    else:
-        print("Invalid Command")
-    command = input("&>> ").upper()
+                    TWeapon = "Empty"
+                    TWeaponBonus = {"Health":0,"Attack":0,"Defense":0,"Speed":0,"Type":"SXLMA"}
+                    if(command.upper() != "N"):
+                        TWeapon = command
+                        TWeaponBonus = {"Health":character.Stash[command][0],"Attack":character.Stash[command][1],"Defense":character.Stash[command][2],"Speed":character.Stash[command][3],"Type":character.Stash[command][4]}
+                    print("Type the amount you want to trade")
+                    command = input("&>> ")
+                    while(int(command) > character.Money or int(command) < 0):
+                        print("Invalid amount. Type the amount you want to trade (amount cannot be negative)")
+                        print("You have $" + str(character.Money))
+                        command = input("&>> ")
 
-conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                    if(command.upper() != "Q" and command.upper() != "QUIT"):
+                        success = joinTrade({"Name":TWeapon,"WeaponBonus":TWeaponBonus,"Money":int(command)})
+                        print({"Name":TWeapon,"WeaponBonus":TWeaponBonus,"Money":0})
+                        if(success != -1):
+                            if(TWeapon != "Empty"):
+                                del character.Stash[TWeapon]
+                            character.Stash[success["Name"]] = {0:success["WeaponBonus"]["Health"],1:success["WeaponBonus"]["Attack"],2:success["WeaponBonus"]["Defense"],3:success["WeaponBonus"]["Speed"],4:success["WeaponBonus"]["Type"]}
+                            character.Money = character.Money - int(command)
+                            clear()
+                            conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                            character.show()
+                            menu()
+                        else:
+                            clear()
+                            print()
+                            print("Trade was unsuccessful")   
+                            print()
+                            conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                            character.show()
+                            menu()  
+        elif(command == 'CLEAR'):
+            clear()
+            character.show()
+            menu()
+        elif(command == 'SAVE'):
+            conn.db.push("Profiles/" + username + "/Character", character.getDict())
+            clear()
+            character.show()
+            menu()
+        else:
+            print("Invalid Command")
+        command = input("&>> ").upper()
+
+    conn.db.push("Profiles/" + username + "/Character", character.getDict())
+
+SelectionMenu()
