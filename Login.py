@@ -331,21 +331,24 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def dict2Character(d):
-        name = d["Name"]
-        style = d["Style"]
-        weapon = d["Weapon"]["Name"]
-        weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
-        maxhealth = d["MaxHealth"]
-        health = d["Health"]
-        attack = d["Attack"]
-        defense = d["Defense"]
-        speed = d["Speed"]
-        money = d["Money"]
-        stash = d["Stash"]
-        character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
-        character.MaxHealth = maxhealth
+    if(d == "Empty"):
+        return None
+    name = d["Name"]
+    style = d["Style"]
+    weapon = d["Weapon"]["Name"]
+    weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
+    maxhealth = d["MaxHealth"]
+    health = d["Health"]
+    attack = d["Attack"]
+    defense = d["Defense"]
+    speed = d["Speed"]
+    money = d["Money"]
+    stash = d["Stash"]
+    loc = [d["location"][0], d["location"][1], d["location"][2]]
+    character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash, location=loc)
+    character.MaxHealth = maxhealth
 
-        return character
+    return character
 
 def dict2Board(d):
     board = Board(size=len(d["Board"]),board=d["Board"])
@@ -364,7 +367,7 @@ def dict2Board(d):
 
     return [board, team1, team2]
 
-def JoinFight(charcter):
+def JoinFight(character):
     #Colors
     red = "\033[31m"
     green = "\033[32m"
@@ -441,7 +444,8 @@ def JoinFight(charcter):
             i = i + 1
 
     team1[2] = character
-    b.place(team1[2].location,red + "&" + end)
+    team1[2].location = locations[2]
+    b.place(team1[2].location,blue + "&" + end)
 
     connection = MultiplayerConnection()
     clear()
@@ -462,14 +466,14 @@ def JoinFight(charcter):
     positon = results
     roomSize = connection.getRoomSize(roomName)
     
-    content = dict2board(connection.getGame(roomName))
+    content = dict2Board(connection.getGame(roomName))
     p1_board = content[0]
     team2 = content[1]
 
-    for character in team2:
-        b.place(character.location,red + character.getIcon() + end)
+    for c in team2:
+        b.place(c.location,red + c.getIcon() + end)
 
-    connection.pushGame(roomName,b.getDict(team2,team1))
+    connection.pushGame(roomName,b.board2dict(team2,team1))
     data = "start"
 
     connection.passTurn(roomName,(positon % roomSize) + 1)
@@ -477,9 +481,15 @@ def JoinFight(charcter):
     team2Win = False
     try:  
         while(not team1Win and not team2Win):
+            clear()
+            print()
+            b.show()
+            
+
+            print()
             connection.waitTurn(roomName,positon)
             clear()
-            contents = dict2board(connection.getGame(roomName))
+            contents = dict2Board(connection.getGame(roomName))
             b = contents[0]
             team1 = contents[1]
             team2 = contents[2]
@@ -557,7 +567,7 @@ def JoinFight(charcter):
     return -1
 
 
-def StartFight(charcter):
+def StartFight(character):
     #Colors
     red = "\033[31m"
     green = "\033[32m"
@@ -633,6 +643,7 @@ def StartFight(charcter):
             i = i + 1
 
     team1[2] = character
+    team1[2].location = locations[2]
     b.place(team1[2].location,red + "&" + end)
 
     team2 = [None, None, None, None, None]
@@ -657,9 +668,14 @@ def StartFight(charcter):
     team2Win = False
     try:
         while(not team1Win and not team2Win):
+            clear()
+            print()
+            b.show()
+
+            print()
             connection.waitTurn(roomName,1)
             clear()
-            contents = dict2board(connection.getGame(roomName))
+            contents = dict2Board(connection.getGame(roomName))
             b = contents[0]
             team1 = contents[1]
             team2 = contents[2]
@@ -811,12 +827,12 @@ def SelectionMenu():
                 print("You do not have enough money")
         elif(command == 'FIGHT'):
             print("Not Ready yet")
-            command = input("Type s to start fight and j to join")
-            while(command.upper() != 's' and command.upper() != 'j'):
-                command = input("Invalid Choice. Type s to start fight and j to join")
-            if(command.upper() == 's'):
+            command = input("Type s to start fight and j to join: ")
+            while(command.upper() != 'S' and command.upper() != 'J'):
+                command = input("Invalid Choice. Type s to start fight and j to join: ")
+            if(command.upper() == 'S'):
                 print(StartFight(character))
-            elif(command.upper() == 'j'):
+            elif(command.upper() == 'J'):
                 print(JoinFight(character))
         elif(command == 'EQUIP'):
             weapon = False
