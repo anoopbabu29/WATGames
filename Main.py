@@ -91,23 +91,23 @@ i = 0
 locations = [(1,2,'*'),(2,4,'*'),(3,6,'*'),(2,8,'*'),(1,10,'*')]
 for c in setup:
     if(c == "S"):
-        team1[i] = Character("Generic Swordsman " + str(increments[0]),"S", Stash=["Sword1","Sword2","Sword3"],location=locations[i])
+        team1[i] = Character(Name="Generic Swordsman " + str(increments[0]), Style="S", Weapon="Sword", WeaponBonus=(2,0,0,0,"S"), Health=50, Attack=50, Defense=30, Speed=15, Stash=["Sword1","Sword2","Sword3"],location=locations[i])
         b.place(team1[i].location,red + "S" + end)
         increments[0] = increments[0] + 1
     if(c == "X"):
-        team1[i] = Character("Generic Axeman " + str(increments[1]),"X", Stash=["Axeman1","Axeman2","Axeman3"],location=locations[i])
+        team1[i] = Character(Name="Generic Axeman " + str(increments[1]), Style="X", Weapon="Axe", WeaponBonus=(0,2,0,0,"X"), Health=50, Attack=55, Defense=25, Speed=15, Stash=["Axeman1","Axeman2","Axeman3"],location=locations[i])
         b.place(team1[i].location,red + "X" + end)
         increments[1] = increments[1] + 1
     if(c == "L"):
-        team1[i] = Character("Generic Lancer " + str(increments[2]),"L", Stash=["Lance1","Lance2","Lance3"],location=locations[i])
+        team1[i] = Character(Name="Generic Lancer " + str(increments[2]), Style="L", Weapon="Lance", WeaponBonus=(0,0,2,0,"L"), Health=50, Attack=45, Defense=35, Speed=15, Stash=["Lance1","Lance2","Lance3"],location=locations[i])
         b.place(team1[i].location,red + "L" + end)
         increments[2] = increments[2] + 1
     if(c == "M"):
-        team1[i] = Character("Generic Mage   " + str(increments[3]),"M", Stash=["Book1","Book2","Book3"], location=locations[i])
+        team1[i] = Character(Name="Generic Mage   " + str(increments[3]), Style="M", Weapon="The Magic Tome", WeaponBonus=(2,0,0,0,"M"), Health=52, Attack=53, Defense=30, Speed=10, Stash=["Book1","Book2","Book3"], location=locations[i])
         b.place(team1[i].location,red + "M" + end)
         increments[3] = increments[3] + 1
     if(c == "A"):
-        team1[i] = Character("Generic Archer " + str(increments[4]),"A", Stash=["Archer1","Archer2","Archer3"],location=locations[i])
+        team1[i] = Character(Name="Generic Archer " + str(increments[4]), Style="A", Weapon="Bow", WeaponBonus=(0,2,0,0,"A"), Health=50, Attack=50, Defense=25, Speed=20, Stash=["Archer1","Archer2","Archer3"],location=locations[i])
         b.place(team1[i].location,red + "A" + end)
         increments[4] = increments[4] + 1
 
@@ -138,12 +138,12 @@ b.place(ga2.location,blue + "A" + end)
 team2 = [gm2, gs2, gx2, gl2, ga2]
 
 clear()
-db = Database()
-db.push("Board",b.board2dict(team1,team2))
-print(b.board2dict(team1,team2))
-print(db.get("Board"))
-print(dict2Board(db.get("Board")))
-quit()
+# db = Database()
+# db.push("Board",b.board2dict(team1,team2))
+# print(b.board2dict(team1,team2))
+# print(db.get("Board"))
+# print(dict2Board(db.get("Board")))
+# quit()
 #
 print()
 b.show()

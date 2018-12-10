@@ -1,5 +1,7 @@
 from Multiplayer.Multiplayer import Database, MultiplayerConnection
 from Character import Character
+from Character import Board
+from Character import _Getch
 from lootbox import Lootbox
 from uuid import getnode as get_mac
 import os
@@ -130,7 +132,7 @@ def begin(conn):
             WeaponBonus = (loot[1][0],loot[1][1],loot[1][2],loot[1][3],loot[1][4])
 
             #
-            pool = 30
+            pool = 35
             Health = 40
             Attack = 40
             Defense = 20
@@ -325,6 +327,419 @@ def joinTrade(item):
 conn = LoginConnection()
 info = begin(conn)
 
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def dict2Character(d):
+        name = d["Name"]
+        style = d["Style"]
+        weapon = d["Weapon"]["Name"]
+        weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
+        maxhealth = d["MaxHealth"]
+        health = d["Health"]
+        attack = d["Attack"]
+        defense = d["Defense"]
+        speed = d["Speed"]
+        money = d["Money"]
+        stash = d["Stash"]
+        character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
+        character.MaxHealth = maxhealth
+
+        return character
+
+def dict2Board(d):
+    board = Board(size=len(d["Board"]),board=d["Board"])
+    team1 = [None for i in range(5)]
+    team2 = [None for i in range(5)]
+    print(d["Team1"][0])
+    index = 0
+    for character in d["Team1"]:
+        team1[index] = dict2Character(d["Team1"][index])
+        index = index + 1
+
+    index = 0
+    for character in d["Team2"]:
+        team2[index] = dict2Character(d["Team2"][index])
+        index = index + 1
+
+    return [board, team1, team2]
+
+def JoinFight(charcter):
+    #Colors
+    red = "\033[31m"
+    green = "\033[32m"
+    yellow = "\033[33m"
+    blue = "\033[36m"
+    end = "\033[0m"
+
+    getch = _Getch()
+
+    valid = "no"
+    while(valid != 'Y'):      
+        clear()
+        b = Board()
+        print("\t* * * * * * * * * * * * *")
+        print("\t* * 1 * * * * * * * 4 * *")
+        print("\t* * * * 2 * * * 3 * * * *")
+        print("\t* * * * * * Y * * * * * *")
+        print("\t* * * * * * * * * * * * *")
+        print()
+        print("Type in 4 character string represented the team you want for battle in order of positon (See Above)")
+        print("([ex] \"ASXM\" for 1 Archer, 1 Swoardsmen, 1 Axeman, and 1 Mage)")
+        setup = input("Team: ").upper()
+        types = {'S','X','L','M','A'}
+        while(len(setup) != 4):
+            print("Invalid team command")
+            setup = input("Team: ").upper()
+
+        while(len(setup) != 4  or not ((setup[0] in types) and (setup[1] in types) and (setup[2] in types) and (setup[3] in types))):
+            print("Invalid team command")
+            setup = input("Team: ").upper()
+            while(len(setup) != 4):
+                print("Invalid team command")
+                setup = input("Team: ").upper()
+
+        print("\t* * * * * * * * * * * * *")
+        print("\t* * " + setup[0] + " * * * * * * * " + setup[3] + " * *")
+        print("\t* * * * " + setup[1] + " * * * " + setup[2] + " * * * *")
+        print("\t* * * * * * Y * * * * * *")
+        print("\t* * * * * * * * * * * * *")
+        print()
+        valid = input("Is this good (y/n)? ").upper()
+
+    # Team 1
+    team1 = [None, None, None, None, None]
+    increments = [1,1,1,1,1]
+
+    i = 0
+
+    locations = [(12 - 1,10,'*'),(12 - 2,8,'*'),(12 - 3,6,'*'),(12 - 2,4,'*'),(12 - 1,2,'*')]
+    for c in setup:
+        if(c == "S"):
+            team1[i] = Character(Name="Generic Swordsman " + str(increments[0]), Style="S", Weapon="Sword", WeaponBonus=(2,0,0,0,"S"), Health=50, Attack=50, Defense=30, Speed=15, Stash=["Sword1","Sword2","Sword3"],location=locations[i])
+            b.place(team1[i].location,blue + "S" + end)
+            increments[0] = increments[0] + 1
+        if(c == "X"):
+            team1[i] = Character(Name="Generic Axeman " + str(increments[1]), Style="X", Weapon="Axe", WeaponBonus=(0,2,0,0,"X"), Health=50, Attack=55, Defense=25, Speed=15, Stash=["Axeman1","Axeman2","Axeman3"],location=locations[i])
+            b.place(team1[i].location,blue + "X" + end)
+            increments[1] = increments[1] + 1
+        if(c == "L"):
+            team1[i] = Character(Name="Generic Lancer " + str(increments[2]), Style="L", Weapon="Lance", WeaponBonus=(0,0,2,0,"L"), Health=50, Attack=45, Defense=35, Speed=15, Stash=["Lance1","Lance2","Lance3"],location=locations[i])
+            b.place(team1[i].location,blue + "L" + end)
+            increments[2] = increments[2] + 1
+        if(c == "M"):
+            team1[i] = Character(Name="Generic Mage   " + str(increments[3]), Style="M", Weapon="The Magic Tome", WeaponBonus=(2,0,0,0,"M"), Health=52, Attack=53, Defense=30, Speed=10, Stash=["Book1","Book2","Book3"], location=locations[i])
+            b.place(team1[i].location,blue + "M" + end)
+            increments[3] = increments[3] + 1
+        if(c == "A"):
+            team1[i] = Character(Name="Generic Archer " + str(increments[4]), Style="A", Weapon="Bow", WeaponBonus=(0,2,0,0,"A"), Health=50, Attack=50, Defense=25, Speed=20, Stash=["Archer1","Archer2","Archer3"],location=locations[i])
+            b.place(team1[i].location,blue + "A" + end)
+            increments[4] = increments[4] + 1
+
+        i = i + 1
+        if(i == 2):
+            i = i + 1
+
+    team1[2] = character
+    b.place(team1[2].location,red + "&" + end)
+
+    connection = MultiplayerConnection()
+    clear()
+    print()
+    print("Connection Setup For Fight")
+    print()
+    roomName = input("Enter Room Name: ")
+    playerName = "Player2"
+
+    results = connection.join(roomName,playerName)
+    while(results < 0):
+        if(results == -1):
+            roomName = input("Enter Room Name Again: ")
+        elif(results == -2):
+            playerName = input("Enter Player Name Again: ")
+        results = connection.join(roomName,playerName)
+
+    positon = results
+    roomSize = connection.getRoomSize(roomName)
+    
+    content = dict2board(connection.getGame(roomName))
+    p1_board = content[0]
+    team2 = content[1]
+
+    for character in team2:
+        b.place(character.location,red + character.getIcon() + end)
+
+    connection.pushGame(roomName,b.getDict(team2,team1))
+    data = "start"
+
+    connection.passTurn(roomName,(positon % roomSize) + 1)
+    team1Win = False
+    team2Win = False
+    try:  
+        while(not team1Win and not team2Win):
+            connection.waitTurn(roomName,positon)
+            clear()
+            contents = dict2board(connection.getGame(roomName))
+            b = contents[0]
+            team1 = contents[1]
+            team2 = contents[2]
+
+            clear()
+            print()
+            b.show()
+            print()
+
+            print("{Team1}\n")
+            for c in team1:
+                print(c.getStats())
+            print()
+
+            print("{Team2}\n")
+            for c in team2:
+                print(c.getStats())
+
+            print()
+            
+             #Character
+            team1Moved = []
+            team2Moved = []
+
+            for i in range(len(team1)):
+                team1Moved.append(not team1[i].isAlive())
+                    
+
+            for i in range(len(team2)):
+                team2Moved.append(not team2[i].isAlive())
+
+            for char in team2:
+                team1, team2, team2Moved = b.move(team1, team2, team2Moved, 2)
+                
+                if(not team1[int(len(team1)/2)].isAlive()):
+                    team1Win = True
+                    break
+                
+                if(not team2[int(len(team2)/2)].isAlive()):
+                    team2Win = True
+                    break
+
+                for i in range(len(team2)):
+                    if(not team2[i].isAlive()):
+                        team2Moved[i] = True
+
+            connection.pushGame(roomName,b.board2dict(team1,team2))
+            connection.passTurn(roomName,(positon % roomSize) + 1)
+    except KeyboardInterrupt:
+        connection.close(roomName)
+        return -1
+
+    #print board
+    clear()
+    print()
+    b.show()
+    print()
+
+    print("{Team1}\n")
+    for c in team1:
+        print(c.getStats())
+    print()
+
+    print("{Team2}\n")
+    for c in team2:
+        print(c.getStats())
+    print()
+
+    if(team1Win):
+        print("You Win")
+    if(team2Win):
+        print("You Lost")
+        connection.close(roomName)
+    
+    return -1
+
+
+def StartFight(charcter):
+    #Colors
+    red = "\033[31m"
+    green = "\033[32m"
+    yellow = "\033[33m"
+    blue = "\033[36m"
+    end = "\033[0m"
+
+    getch = _Getch()
+
+    valid = "no"
+    while(valid != 'Y'):      
+        clear()
+        b = Board()
+        print("\t* * * * * * * * * * * * *")
+        print("\t* * 1 * * * * * * * 4 * *")
+        print("\t* * * * 2 * * * 3 * * * *")
+        print("\t* * * * * * Y * * * * * *")
+        print("\t* * * * * * * * * * * * *")
+        print()
+        print("Type in 4 character string represented the team you want for battle in order of positon (See Above)")
+        print("([ex] \"ASXM\" for 1 Archer, 1 Swoardsmen, 1 Axeman, and 1 Mage)")
+        setup = input("Team: ").upper()
+        types = {'S','X','L','M','A'}
+        while(len(setup) != 4):
+            print("Invalid team command")
+            setup = input("Team: ").upper()
+
+        while(len(setup) != 4  or not ((setup[0] in types) and (setup[1] in types) and (setup[2] in types) and (setup[3] in types))):
+            print("Invalid team command")
+            setup = input("Team: ").upper()
+            while(len(setup) != 4):
+                print("Invalid team command")
+                setup = input("Team: ").upper()
+
+        print("\t* * * * * * * * * * * * *")
+        print("\t* * " + setup[0] + " * * * * * * * " + setup[3] + " * *")
+        print("\t* * * * " + setup[1] + " * * * " + setup[2] + " * * * *")
+        print("\t* * * * * * Y * * * * * *")
+        print("\t* * * * * * * * * * * * *")
+        print()
+        valid = input("Is this good (y/n)? ").upper()
+
+    # Team 1
+    team1 = [None, None, None, None, None]
+    increments = [1,1,1,1,1]
+
+    i = 0
+    locations = [(1,2,'*'),(2,4,'*'),(3,6,'*'),(2,8,'*'),(1,10,'*')]
+    for c in setup:
+        if(c == "S"):
+            team1[i] = Character(Name="Generic Swordsman " + str(increments[0]), Style="S", Weapon="Sword", WeaponBonus=(2,0,0,0,"S"), Health=50, Attack=50, Defense=30, Speed=15, Stash=["Sword1","Sword2","Sword3"],location=locations[i])
+            b.place(team1[i].location,red + "S" + end)
+            increments[0] = increments[0] + 1
+        if(c == "X"):
+            team1[i] = Character(Name="Generic Axeman " + str(increments[1]), Style="X", Weapon="Axe", WeaponBonus=(0,2,0,0,"X"), Health=50, Attack=55, Defense=25, Speed=15, Stash=["Axeman1","Axeman2","Axeman3"],location=locations[i])
+            b.place(team1[i].location,red + "X" + end)
+            increments[1] = increments[1] + 1
+        if(c == "L"):
+            team1[i] = Character(Name="Generic Lancer " + str(increments[2]), Style="L", Weapon="Lance", WeaponBonus=(0,0,2,0,"L"), Health=50, Attack=45, Defense=35, Speed=15, Stash=["Lance1","Lance2","Lance3"],location=locations[i])
+            b.place(team1[i].location,red + "L" + end)
+            increments[2] = increments[2] + 1
+        if(c == "M"):
+            team1[i] = Character(Name="Generic Mage   " + str(increments[3]), Style="M", Weapon="The Magic Tome", WeaponBonus=(2,0,0,0,"M"), Health=52, Attack=53, Defense=30, Speed=10, Stash=["Book1","Book2","Book3"], location=locations[i])
+            b.place(team1[i].location,red + "M" + end)
+            increments[3] = increments[3] + 1
+        if(c == "A"):
+            team1[i] = Character(Name="Generic Archer " + str(increments[4]), Style="A", Weapon="Bow", WeaponBonus=(0,2,0,0,"A"), Health=50, Attack=50, Defense=25, Speed=20, Stash=["Archer1","Archer2","Archer3"],location=locations[i])
+            b.place(team1[i].location,red + "A" + end)
+            increments[4] = increments[4] + 1
+
+        i = i + 1
+        if(i == 2):
+            i = i + 1
+
+    team1[2] = character
+    b.place(team1[2].location,red + "&" + end)
+
+    team2 = [None, None, None, None, None]
+
+    # Starting Connection
+    connection = MultiplayerConnection()
+    clear()
+    print()
+    print("Connection Setup For Fight")
+    print()
+    roomName = input("Enter Room Name: ")
+    playerName = "Player1"
+    roomSize = 2
+    
+    results = connection.start(roomName,playerName,roomSize,game=b.board2dict(team1,team2))
+    while(results == -1):
+        roomName = input("Enter Room Name Again: ")
+        results = connection.start(roomName,playerName,roomSize,game=b.board2dict(team1,team2))
+
+    data = "Waiting"
+    team1Win = False
+    team2Win = False
+    try:
+        while(not team1Win and not team2Win):
+            connection.waitTurn(roomName,1)
+            clear()
+            contents = dict2board(connection.getGame(roomName))
+            b = contents[0]
+            team1 = contents[1]
+            team2 = contents[2]
+
+            clear()
+            print()
+            b.show()
+            print()
+
+            print("{Team1}\n")
+            for c in team1:
+                print(c.getStats())
+            print()
+
+            print("{Team2}\n")
+            for c in team2:
+                print(c.getStats())
+
+            print()
+            
+             #Character
+            team1Moved = []
+            team2Moved = []
+
+            for i in range(len(team1)):
+                team1Moved.append(not team1[i].isAlive())
+                    
+
+            for i in range(len(team2)):
+                team2Moved.append(not team2[i].isAlive())
+
+            for char in team1:
+                team1, team2, team1Moved = b.move(team1, team2, team1Moved, 1)
+                
+                if(not team1[int(len(team1)/2)].isAlive()):
+                    team1Win = True
+                    break
+                
+                if(not team2[int(len(team2)/2)].isAlive()):
+                    team2Win = True
+                    break
+                
+                for i in range(len(team1)):
+                    if(not team1[i].isAlive()):
+                        team1Moved[i] = True  
+
+                for i in range(len(team2)):
+                    if(not team2[i].isAlive()):
+                        team2Moved[i] = True
+            
+            connection.pushGame(roomName,b.board2dict(team1,team2))
+            connection.passTurn(roomName,2)
+    except KeyboardInterrupt:
+        connection.close(roomName)
+        return -1
+
+    #print board
+    clear()
+    print()
+    b.show()
+    print()
+
+    print("{Team1}\n")
+    for c in team1:
+        print(c.getStats())
+    print()
+
+    print("{Team2}\n")
+    for c in team2:
+        print(c.getStats())
+    print()
+
+    if(team2Win):
+        print("You Win")
+    if(team1Win):
+        print("You Lost")
+        connection.close(roomName)
+    
+    return -1
+
 def SelectionMenu():
     character = info[0]
     username = info[1]
@@ -396,6 +811,13 @@ def SelectionMenu():
                 print("You do not have enough money")
         elif(command == 'FIGHT'):
             print("Not Ready yet")
+            command = input("Type s to start fight and j to join")
+            while(command.upper() != 's' and command.upper() != 'j'):
+                command = input("Invalid Choice. Type s to start fight and j to join")
+            if(command.upper() == 's'):
+                print(StartFight(character))
+            elif(command.upper() == 'j'):
+                print(JoinFight(character))
         elif(command == 'EQUIP'):
             weapon = False
             print("Type the name of the item you want to equiped")
