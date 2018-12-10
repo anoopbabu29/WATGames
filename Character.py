@@ -205,8 +205,6 @@ class Board():
         character.location = [location2[0], location2[1], c]
         return character
 
-    
-
     def bonus(self,attacker,defender):
         bonus = 0
         if(("S" in attacker.Style and "X" in defender.Style) or ("X" in attacker.Style and "L" in defender.Style) or ("L" in attacker.Style and "S" in defender.Style) or ("M" in attacker.Style and "A" in defender.Style) or ("A" in attacker.Style and "M" in defender.Style)):

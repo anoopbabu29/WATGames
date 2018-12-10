@@ -486,8 +486,8 @@ def JoinFight(character):
             clear()
             print()
             b.show()
-
-            if(not(None in team2)):
+            
+            if(not(None in team1)):
                 print("{Team1}\n")
                 for c in team1:
                     print(c.getStats())
@@ -704,7 +704,7 @@ def StartFight(character):
             b.show()
 
             if(not(None in team1)):
-                 print("{Team1}\n")
+                print("{Team1}\n")
                 for c in team1:
                     print(c.getStats())
                 print()

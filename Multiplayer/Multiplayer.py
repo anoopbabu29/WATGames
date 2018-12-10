@@ -148,8 +148,10 @@ class MultiplayerConnection():
         return self.db.push("Multiplayer/" + str(id) + "/Turn",new_position)
 
     def waitTurn(self,id,position):
-        while(int(self.db.get("Multiplayer/" + str(id) + "/Turn")) != position):
+        turn = int(self.db.get("Multiplayer/" + str(id) + "/Turn"))
+        while(turn != position):
             if self.dataChange:
+                turn = int(self.db.get("Multiplayer/" + str(id) + "/Turn"))
                 #clear()
                 #print("Room: " + id + "\n")
                 print()
