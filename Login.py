@@ -626,7 +626,7 @@ def StartFight(character):
 
     i = 0
     locations = [(1,2,'*'),(2,4,'*'),(3,6,'*'),(2,8,'*'),(1,10,'*')]
-    for c xn setup:
+    for c in setup:
         if(c == "S"):
             team1[i] = Character(Name="Generic Swordsman " + str(increments[0]), Style="S", Weapon="Sword", WeaponBonus=(2,0,0,0,"S"), Health=50, Attack=50, Defense=30, Speed=15, Stash=["Sword1","Sword2","Sword3"],location=locations[i])
             b.place(team1[i].location,red + "S" + end)
