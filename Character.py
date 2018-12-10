@@ -62,7 +62,7 @@ class _GetchWindows:
 getch = _Getch()
 
 class Character():
-    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0,"SXLMA"), Health=40, Attack=40, Defense=20, Speed=15, Money=0, Stash={"Empty":{0:0,1:0,2:0,3:0,4:"SXLMA"}}, location=(None,None,None)):
+    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0,"SXLMA"), Health=40, Attack=40, Defense=20, Speed=5, Money=0, Stash={"Empty":{0:0,1:0,2:0,3:0,4:"SXLMA"}}, location=(None,None,None)):
         self.Name = Name
         self.Style = Style # S: Swordsman, X: Axeman, L: Lancer
         self.EquipedStyle = None
