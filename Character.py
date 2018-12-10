@@ -122,7 +122,7 @@ class Character():
 
     def getStats(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
-        if(self.Health < 0):
+        if(self.Health <= 0):
             return red + "{ Dead } " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack + self.WeaponBonus[1]) + " Speed: " + str(self.Speed + self.WeaponBonus[3]) + " Defense: " + str(self.Defense + self.WeaponBonus[2]) + " Range: " + str(self.getRange()) + end
   
         return "(" + self.num2chr(self.location[0]) + ", " + self.num2chr(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack + self.WeaponBonus[1]) + " Speed: " + str(self.Speed + self.WeaponBonus[3]) + " Defense: " + str(self.Defense + self.WeaponBonus[2]) + " Range: " + str(self.getRange())
