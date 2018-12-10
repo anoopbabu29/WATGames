@@ -1,3 +1,4 @@
+from Multiplayer.Multiplayer import Database, MultiplayerConnection
 from Character import Character
 from Character import Board
 from Character import _Getch
@@ -5,6 +6,40 @@ import os
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def dict2Character(d):
+        name = d["Name"]
+        style = d["Style"]
+        weapon = d["Weapon"]["Name"]
+        weaponbonus = (d["Weapon"]["Health"],d["Weapon"]["Attack"],d["Weapon"]["Defense"],d["Weapon"]["Speed"],d["Weapon"]["Type"])
+        maxhealth = d["MaxHealth"]
+        health = d["Health"]
+        attack = d["Attack"]
+        defense = d["Defense"]
+        speed = d["Speed"]
+        money = d["Money"]
+        stash = d["Stash"]
+        character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
+        character.MaxHealth = maxhealth
+
+        return character
+
+def dict2Board(d):
+    board = Board(size=len(d["Board"]),board=d["Board"])
+    team1 = [None for i in range(5)]
+    team2 = [None for i in range(5)]
+    print(d["Team1"][0])
+    index = 0
+    for character in d["Team1"]:
+        team1[index] = dict2Character(d["Team1"][index])
+        index = index + 1
+
+    index = 0
+    for character in d["Team2"]:
+        team2[index] = dict2Character(d["Team2"][index])
+        index = index + 1
+
+    return [board, team1, team2]
 
 #Colors
 red = "\033[31m"
@@ -103,8 +138,13 @@ b.place(ga2.location,blue + "A" + end)
 team2 = [gm2, gs2, gx2, gl2, ga2]
 
 #
-
-#ga2 = b.attack(gm,ga2)
+db = Database()
+db.push("Board",b.board2dict(team1,team2))
+print(b.board2dict(team1,team2))
+print(db.get("Board"))
+print(dict2Board(db.get("Board")))
+quit()
+#
 print()
 b.show()
 print()

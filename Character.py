@@ -145,18 +145,28 @@ class Character():
         }
 
 class Board():
-    def __init__(self):
-        self.size = 13
-        self.board = []
-        for i in range(self.size):
-            self.board.append(['*']*self.size)
+    def __init__(self,size=13,board=[]):
+        self.size = size
+        self.board = board
+        if board == []:
+            for i in range(self.size):
+                self.board.append(['*']*self.size)
 
     def board2dict(self,team1,team2):
         board = {
-            "Board": board,
+            "Board":self.board,
             "Team1": {},
             "Team2": {}
         }
+        index = 0
+        for character in team1:
+            board["Team1"][index] = character.getDict()
+            index = index + 1
+
+        index = 0
+        for character in team2:
+            board["Team2"][index] = character.getDict()
+            index = index + 1
         return board
 
     def num2chr(self,i):
