@@ -85,6 +85,11 @@ class Character():
 
         self.location = location
 
+    def isAlive(self):
+        if(self.Health <= 0):
+            return False
+        return True
+
     def getIcon(self):
         if(len(self.Style) == 1):
             return self.Style
@@ -475,9 +480,19 @@ class Board():
                 #Pressed Enter
                 self.board[dteam[selIndex].location[0]][dteam[selIndex].location[1]] = dcolor + dteam[selIndex].getIcon() + end
                 self.board[ateam[l].location[0]][ateam[l].location[1]] = acolor + ateam[l].getIcon() + end
+
                 dteam[selIndex] = self.inAttackRadius(ateam[l], dteam[selIndex])
-                if(self.inRadius(dteam[selIndex], ateam[l])):
-                    ateam[l] = self.inAttackRadius(dteam[selIndex], ateam[l])
+                if(dteam[selIndex].isAlive()):
+                    if(self.inRadius(dteam[selIndex], ateam[l])):
+                        ateam[l] = self.inAttackRadius(dteam[selIndex], ateam[l])
+                        if(not ateam[l].isAlive()):
+                            self.board[ateam[l].location[0]][ateam[l].location[1]] = ateam[l].location[2]
+                            ateam[l].location[0] = -99
+                            ateam[l].location[1] = -99
+                else:
+                    self.board[dteam[selIndex].location[0]][dteam[selIndex].location[1]] = dteam[selIndex].location[2]
+                    dteam[selIndex].location[0] = -99
+                    dteam[selIndex].location[1] = -99
                 break
 
             elif(ord(ch) == 97):
@@ -555,8 +570,8 @@ class Board():
             elif(ord(ch) == 13):
                 #Actually move character
                 team1, team2, isMoved = self.moveChar(team1, team2, isMoved, teamNum, l)
+                #Attack Step if Moved
                 if(isMoved[l]):
-                    print('Should Attack Now')
                     team1, team2 = self.attackStep(team1, team2, teamNum, l)
             elif(ord(ch) == 3):
                 sys.exit(0)

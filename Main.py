@@ -80,7 +80,7 @@ for c in setup:
     if(i == 2):
         i = i + 1
 
-team1[2] = Character("This is You","MX", Attack=70, location=locations[2])
+team1[2] = Character("This is You","MX", Attack=40, location=locations[2])
 b.place(team1[2].location,red + "&" + end)
 
 # Team 2
@@ -105,6 +105,7 @@ team2 = [gm2, gs2, gx2, gl2, ga2]
 #
 
 #ga2 = b.attack(gm,ga2)
+clear()
 print()
 b.show()
 print()
@@ -116,7 +117,7 @@ print()
 
 print("{Team2}\n")
 for c in team2:
-    c.getStats()
+    print(c.getStats())
 
 print()
 
@@ -130,16 +131,72 @@ print()
 # push board
 # Next player's turn
 
-cIn = ' '
+team1Win = False
+team2Win = False
 
-
-while(ord(cIn) != 3):
+while(not team1Win and not team2Win):
     #Character
-    team1Moved = [False, False, False, False, False]
-    team2Moved = [False, False, False, False, False]
+    team1Moved = []
+    team2Moved = []
+
+    for i in range(len(team1)):
+        team1Moved.append(not team1[i].isAlive())
+            
+
+    for i in range(len(team2)):
+        team2Moved.append(not team2[i].isAlive())
     
     for char in team1:
         team1, team2, team1Moved = b.move(team1, team2, team1Moved, 1)
+        
+        if(not team1[int(len(team1)/2)].isAlive()):
+            team1Win = True
+            break
+        
+        if(not team2[int(len(team2)/2)].isAlive()):
+            team2Win = True
+            break
+        
+        for i in range(len(team1)):
+            if(not team1[i].isAlive()):
+                team1Moved[i] = True  
+
+        for i in range(len(team2)):
+            if(not team2[i].isAlive()):
+                team2Moved[i] = True
     
     for char in team2:
         team1, team2, team2Moved = b.move(team1, team2, team2Moved, 2)
+        
+        if(not team1[int(len(team1)/2)].isAlive()):
+            team1Win = True
+            break
+        
+        if(not team2[int(len(team2)/2)].isAlive()):
+            team2Win = True
+            break
+
+        for i in range(len(team2)):
+            if(not team2[i].isAlive()):
+                team2Moved[i] = True
+    
+#print board
+clear()
+print()
+b.show()
+print()
+
+print("{Team1}\n")
+for c in team1:
+    print(c.getStats())
+print()
+
+print("{Team2}\n")
+for c in team2:
+    print(c.getStats())
+print()
+
+if(team1Win):
+    print("Player 2 Wins")
+if(team2Win):
+    print("Player 1 Wins")
