@@ -582,6 +582,7 @@ def JoinFight(character):
 
     if(team1Win):
         print("You Win")
+        return 1
     if(team2Win):
         print("You Lost")
         try:
@@ -798,6 +799,7 @@ def StartFight(character):
 
     if(team2Win):
         print("You Win")
+        return 1
 
     if(team1Win):
         print("You Lost")

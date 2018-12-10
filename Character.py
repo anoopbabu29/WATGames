@@ -217,7 +217,7 @@ class Board():
 
     def attack(self,attacker,defender):
         damage = ((attacker.Attack + attacker.WeaponBonus[1]) - (defender.Defense + defender.WeaponBonus[2])) * self.bonus(attacker,defender)
-        defender.Health = int((defender.Health - damage) * math.floor(attacker.Speed/defender.Speed))
+        defender.Health = int((defender.Health - damage) * int(math.floor(attacker.Speed/defender.Speed)))
         return defender
 
     def get_adjacent_cells(self, x_coord, y_coord, r):
