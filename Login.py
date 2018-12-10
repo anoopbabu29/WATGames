@@ -5,6 +5,7 @@ from Character import _Getch
 from lootbox import Lootbox
 from uuid import getnode as get_mac
 import os
+import random
 
 #Colors
 red = "\033[31m"
@@ -443,6 +444,7 @@ def JoinFight(character):
         if(i == 2):
             i = i + 1
 
+    character.Health = character.Health + character.WeaponBonus[0]
     team1[2] = character
     team1[2].location = locations[2]
     b.place(team1[2].location,blue + "&" + end)
@@ -538,33 +540,41 @@ def JoinFight(character):
 
             connection.pushGame(roomName,b.board2dict(team1,team2))
             connection.passTurn(roomName,(positon % roomSize) + 1)
-    except KeyboardInterrupt:
-        connection.close(roomName)
+    except:
+        try:
+            connection.close(roomName)
+        except:
+            pass
         return -1
 
-    #print board
-    clear()
-    print()
-    b.show()
-    print()
+    try:
+        #print board
+        clear()
+        print()
+        b.show()
+        print()
 
-    print("{Team1}\n")
-    for c in team1:
-        print(c.getStats())
-    print()
+        print("{Team1}\n")
+        for c in team1:
+            print(c.getStats())
+        print()
 
-    print("{Team2}\n")
-    for c in team2:
-        print(c.getStats())
-    print()
+        print("{Team2}\n")
+        for c in team2:
+            print(c.getStats())
+        print()
+    except:
+        pass
 
     if(team1Win):
         print("You Win")
     if(team2Win):
         print("You Lost")
-        connection.close(roomName)
-    
-    return -1
+        try:
+            connection.close(roomName)
+        except:
+            pass
+        return 0
 
 
 def StartFight(character):
@@ -616,7 +626,7 @@ def StartFight(character):
 
     i = 0
     locations = [(1,2,'*'),(2,4,'*'),(3,6,'*'),(2,8,'*'),(1,10,'*')]
-    for c in setup:
+    for c xn setup:
         if(c == "S"):
             team1[i] = Character(Name="Generic Swordsman " + str(increments[0]), Style="S", Weapon="Sword", WeaponBonus=(2,0,0,0,"S"), Health=50, Attack=50, Defense=30, Speed=15, Stash=["Sword1","Sword2","Sword3"],location=locations[i])
             b.place(team1[i].location,red + "S" + end)
@@ -642,6 +652,7 @@ def StartFight(character):
         if(i == 2):
             i = i + 1
 
+    character.Health = character.Health + character.WeaponBonus[0]
     team1[2] = character
     team1[2].location = locations[2]
     b.place(team1[2].location,red + "&" + end)
@@ -657,12 +668,18 @@ def StartFight(character):
     roomName = input("Enter Room Name: ")
     playerName = "Player1"
     roomSize = 2
-    
-    results = connection.start(roomName,playerName,roomSize,game=b.board2dict(team1,team2))
-    while(results == -1):
-        roomName = input("Enter Room Name Again: ")
-        results = connection.start(roomName,playerName,roomSize,game=b.board2dict(team1,team2))
 
+    try:   
+        results = connection.start(roomName,playerName,roomSize,game=b.board2dict(team1,team2))
+        while(results == -1):
+            roomName = input("Enter Room Name Again: ")
+            results = connection.start(roomName,playerName,roomSize,game=b.board2dict(team1,team2))
+    except:
+        try:
+            connection.close(roomName)
+        except:
+            pass
+        return -1
     data = "Waiting"
     team1Win = False
     team2Win = False
@@ -728,32 +745,43 @@ def StartFight(character):
             
             connection.pushGame(roomName,b.board2dict(team1,team2))
             connection.passTurn(roomName,2)
-    except KeyboardInterrupt:
-        connection.close(roomName)
+    except:
+        try:
+            connection.close(roomName)
+        except:
+            pass
         return -1
 
-    #print board
-    clear()
-    print()
-    b.show()
-    print()
+    try:
+        #print board
+        clear()
+        print()
+        b.show()
+        print()
 
-    print("{Team1}\n")
-    for c in team1:
-        print(c.getStats())
-    print()
+        print("{Team1}\n")
+        for c in team1:
+            print(c.getStats())
+        print()
 
-    print("{Team2}\n")
-    for c in team2:
-        print(c.getStats())
-    print()
+        print("{Team2}\n")
+        for c in team2:
+            print(c.getStats())
+        print()
+    except:
+            pass
 
     if(team2Win):
         print("You Win")
+
     if(team1Win):
         print("You Lost")
-        connection.close(roomName)
-    
+        try:
+            connection.close(roomName)
+        except:
+            pass
+        return 0
+
     return -1
 
 def SelectionMenu():
@@ -826,14 +854,42 @@ def SelectionMenu():
             else:
                 print("You do not have enough money")
         elif(command == 'FIGHT'):
-            print("Not Ready yet")
-            command = input("Type s to start fight and j to join: ")
+            print("Type s to start fight and j to join")
+            command = input("&>>  ")
             while(command.upper() != 'S' and command.upper() != 'J'):
-                command = input("Invalid Choice. Type s to start fight and j to join: ")
+                print("Invalid Choice. Type s to start fight and j to join")
+                command = input("&>>  ")
             if(command.upper() == 'S'):
-                print(StartFight(character))
+                result = StartFight(character)
             elif(command.upper() == 'J'):
-                print(JoinFight(character))
+                result = JoinFight(character)
+            print()
+            if(result != -1):
+                if(result == 1):
+                    character.Health = character.Health - character.WeaponBonus[0]
+
+                    bonus_money = int(1500 * random.randint(50, 101)/100)
+                    character.Money = character.Money + bonus_money
+                    print("You gained $" + str(bonus_money))
+                    conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                    input("type anything to continue... ")
+                    clear()
+                    character.show()
+                    menu()
+                if(result == 0):
+                    clear()
+                    character.show()
+                    menu()
+                    print("You Died")
+                    conn.db.delete("Profiles/" + username)
+                    quit()
+            else:
+                character.Health = character.Health - character.WeaponBonus[0]
+                print("Game Broke")
+                input("type anything to continue... ")
+                clear()
+                character.show()
+                menu()
         elif(command == 'EQUIP'):
             weapon = False
             print("Type the name of the item you want to equiped")
@@ -967,6 +1023,9 @@ def SelectionMenu():
             character.show()
             menu()
         else:
+            clear()
+            character.show()
+            menu()
             print("Invalid Command")
         command = input("&>> ").upper()
 
