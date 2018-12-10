@@ -423,7 +423,7 @@ def JoinFight(character):
     for c in setup:
         if(c == "S"):
             team1[i] = Character(Name="Generic Swordsman " + str(increments[0]), Style="S", Weapon="Sword", WeaponBonus=(2,0,0,0,"S"), Health=50, Attack=50, Defense=30, Speed=15, Stash=["Sword1","Sword2","Sword3"],location=locations[i])
-            team1[i].Health = team1[i].WeaponBonus[0]
+            team1[i].Health = team1[i].Health + team1[i].WeaponBonus[0]
             b.place(team1[i].location,blue + "S" + end)
             increments[0] = increments[0] + 1
         if(c == "X"):
@@ -436,7 +436,7 @@ def JoinFight(character):
             increments[2] = increments[2] + 1
         if(c == "M"):
             team1[i] = Character(Name="Generic Mage   " + str(increments[3]), Style="M", Weapon="The Magic Tome", WeaponBonus=(2,0,0,0,"M"), Health=52, Attack=53, Defense=30, Speed=10, Stash=["Book1","Book2","Book3"], location=locations[i])
-            team1[i].Health = team1[i].WeaponBonus[0]
+            team1[i].Health = team1[i].Health + team1[i].WeaponBonus[0]
             b.place(team1[i].location,blue + "M" + end)
             increments[3] = increments[3] + 1
         if(c == "A"):
@@ -654,7 +654,7 @@ def StartFight(character):
     for c in setup:
         if(c == "S"):
             team1[i] = Character(Name="Generic Swordsman " + str(increments[0]), Style="S", Weapon="Sword", WeaponBonus=(2,0,0,0,"S"), Health=50, Attack=50, Defense=30, Speed=15, Stash=["Sword1","Sword2","Sword3"],location=locations[i])
-            team1[i].Health = team1[i].WeaponBonus[0]
+            team1[i].Health = team1[i].Health + team1[i].WeaponBonus[0]
             b.place(team1[i].location,red + "S" + end)
             increments[0] = increments[0] + 1
         if(c == "X"):
@@ -667,7 +667,7 @@ def StartFight(character):
             increments[2] = increments[2] + 1
         if(c == "M"):
             team1[i] = Character(Name="Generic Mage   " + str(increments[3]), Style="M", Weapon="The Magic Tome", WeaponBonus=(2,0,0,0,"M"), Health=52, Attack=53, Defense=30, Speed=10, Stash=["Book1","Book2","Book3"], location=locations[i])
-            team1[i].Health = team1[i].WeaponBonus[0]
+            team1[i].Health = team1[i].Health + team1[i].WeaponBonus[0]
             b.place(team1[i].location,red + "M" + end)
             increments[3] = increments[3] + 1
         if(c == "A"):
