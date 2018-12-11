@@ -222,8 +222,8 @@ class Board():
 
     def attack(self,attacker,defender):
         damage = ((attacker.Attack + attacker.WeaponBonus[1]) - (defender.Defense + defender.WeaponBonus[2])) * self.bonus(attacker,defender)
-        if(math.floor(attacker.Speed/defender.Speed) > 1):
-            defender.Health = int((defender.Health - damage) * int(math.floor((attacker.Speed + attacker.WeaponBonus[3])/(defender.Speed + defender.WeaponBonus[3]))))
+        if(math.floor((attacker.Speed + attacker.WeaponBonus[3])/(defender.Speed + defender.WeaponBonus[3])) > 1):
+            defender.Health = int((defender.Health - (damage * int(math.floor((attacker.Speed + attacker.WeaponBonus[3])/(defender.Speed + defender.WeaponBonus[3]))))))
         else:
             defender.Health = int((defender.Health - damage))
         return defender
