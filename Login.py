@@ -932,7 +932,7 @@ def SelectionMenu():
                     character.Health = character.Health - character.WeaponBonus[0]
 
                     bonus_money = int(1500 * random.randint(50, 101)/100)
-                    bonus_exp = int(character.Experience * random.randint(25, 51)/100)
+                    bonus_exp = int(character.Experience * random.randint(25, 51)/100) + 3
                     character.Money = character.Money + bonus_money
                     character.Experience = character.Experience + bonus_exp
                     print("You gained $" + str(bonus_money))
