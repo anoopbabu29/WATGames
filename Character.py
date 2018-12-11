@@ -62,7 +62,7 @@ class _GetchWindows:
 getch = _Getch()
 
 class Character():
-    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0,"SXLMA"), Health=40, Attack=40, Defense=20, Speed=5, Money=0, Stash={"Empty":{0:0,1:0,2:0,3:0,4:"SXLMA"}}, location=[None,None,None]):
+    def __init__(self, Name, Style, Weapon="None", WeaponBonus=(0,0,0,0,"SXLMA"), Health=40, Attack=40, Defense=20, Speed=5, Money=0, Stash={"Empty":{0:0,1:0,2:0,3:0,4:"SXLMA"}}, location=[None,None,None], Experience=0):
         self.Name = Name
         self.Style = Style # S: Swordsman, X: Axeman, L: Lancer
         self.EquipedStyle = None
@@ -80,10 +80,14 @@ class Character():
         self.Defense = Defense
         self.Speed = Speed
 
+        self.Experience = Experience
         self.Money = Money
         self.Stash = Stash
 
         self.location = location
+
+    def getLevel(self):
+        return int(math.log(self.Experience + 1))
 
     def isAlive(self):
         if(self.Health <= 0):
@@ -107,7 +111,7 @@ class Character():
     def show(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))
         
-        print(CVIOLET2 + self.Name + end + "\t\t\t$: " + green + str(self.Money) + end)
+        print(CVIOLET2 + self.Name + end + CYELLOW2 + " -lvl " + str(self.getLevel()) + "- " + end + GREY + "Exp: " + str(self.Experience) + end + "\t\t\t$: " + green + str(self.Money) + end)
         print(GREY + "[" + self.Style + ", " + self.Weapon + "]" + end)
         print(green + "\n\tHealth: " + end + str(self.Health) + " + " + str(self.WeaponBonus[0]) + red + " \tAttack: " + end + str(self.Attack) + " + " + str(self.WeaponBonus[1]))
         print(yellow + "\tSpeed: " + end + str(self.Speed) + " + " + str(self.WeaponBonus[3])  + blue + "\tDefense: " + end + str(self.Defense) + " + " + str(self.WeaponBonus[2]))
@@ -125,7 +129,7 @@ class Character():
         if(self.Health <= 0):
             return red + "{ Dead } " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack + self.WeaponBonus[1]) + " Speed: " + str(self.Speed + self.WeaponBonus[3]) + " Defense: " + str(self.Defense + self.WeaponBonus[2]) + " Range: " + str(self.getRange()) + end
   
-        return "(" + self.num2chr(self.location[0]) + ", " + self.num2chr(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack + self.WeaponBonus[1]) + " Speed: " + str(self.Speed + self.WeaponBonus[3]) + " Defense: " + str(self.Defense + self.WeaponBonus[2]) + " Range: " + str(self.getRange())
+        return "(" + self.num2chr(self.location[0]) + ", " + self.num2chr(self.location[1]) + ", " + self.location[2] + ") " + "[" +self.Style + "] " + "-lvl " + str(self.getLevel()) + "- " + self.Name + "\t| Health: " + str(self.Health) + " Attack: " + str(self.Attack + self.WeaponBonus[1]) + " Speed: " + str(self.Speed + self.WeaponBonus[3]) + " Defense: " + str(self.Defense + self.WeaponBonus[2]) + " Range: " + str(self.getRange())
   
     def getDict(self):
         return {
@@ -144,6 +148,7 @@ class Character():
             "Attack" : self.Attack,
             "Defense" : self.Defense,
             "Speed" : self.Speed,
+            "Experience": self.Experience,
             "Money" : self.Money,
             "Stash" : self.Stash,
             "location" : {0 : self.location[0], 1 : self.location[1], 2 : self.location[2]}

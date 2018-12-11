@@ -54,7 +54,9 @@ class LoginConnection():
         self.db.push("Profiles/" + username, {"Character": character.getDict(), "password": password, "Address":str(get_mac())})
         return 1
 
-    def dict2Character(self,d):
+    def dict2Character(seld, d):
+        if(d == "Empty"):
+            return None
         name = d["Name"]
         style = d["Style"]
         weapon = d["Weapon"]["Name"]
@@ -64,9 +66,10 @@ class LoginConnection():
         attack = d["Attack"]
         defense = d["Defense"]
         speed = d["Speed"]
+        exp = d["Experience"]
         money = d["Money"]
         stash = d["Stash"]
-        character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash)
+        character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash, Experience=exp)
         character.MaxHealth = maxhealth
 
         return character
@@ -346,10 +349,11 @@ def dict2Character(d):
     attack = d["Attack"]
     defense = d["Defense"]
     speed = d["Speed"]
+    exp = d["Experience"]
     money = d["Money"]
     stash = d["Stash"]
     loc = [d["location"][0], d["location"][1], d["location"][2]]
-    character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash, location=loc)
+    character = Character(Name=name, Style=style, Weapon=weapon, WeaponBonus=weaponbonus, Health=health, Attack=attack, Defense=defense, Speed=speed, Money=money,Stash=stash, location=loc, Experience=exp)
     character.MaxHealth = maxhealth
 
     return character
@@ -859,7 +863,7 @@ def SelectionMenu():
 
     def menu():
         print("Commands:")
-        print("\tHeal - Spend $100 to increase health")
+        print("\tGain - Spend $2000 to increase Experience by 500")
         print("\tBuy - Spend $1000 to get new Weapon")
         print("\tFight - Start 1v1 Battle with friend")
         print("\tEquip - Equip Weapon from stash")
@@ -871,23 +875,20 @@ def SelectionMenu():
     menu()
     command = input("&>> ").upper()
     while(command != 'Q' and command != 'QUIT'):
-        if(command == 'HEAL'):
-            print("Are sure you want to spend $100 to increase health to " + str(character.MaxHealth) + "? (y/n)")
+        if(command == 'GAIN'):
+            print("Are sure you want to spend $2000 to increase Experience to " + str(character.Experience + 500) + "? (y/n)")
             command = input("&>> ").upper()
-            if(character.Money >= 100):
-                if(character.Health < character.MaxHealth):
-                    if(command == 'Y'):
-                        character.Money = character.Money - 100
-                        character.Health = character.MaxHealth
-                        print("You are successfully healed")
-                        print()
-                        input("type anything to coninue... ")
-                        conn.db.push("Profiles/" + username + "/Character", character.getDict())
-                        clear()
-                        character.show()
-                        menu()
-                else:
-                    print("You are already at Max Health")
+            if(character.Money >= 2000):
+                if(command == 'Y'):
+                    character.Money = character.Money - 2000
+                    character.Experience = character.Experience + 500
+                    print("You are successfully earned 500 Experience")
+                    print()
+                    input("type anything to coninue... ")
+                    conn.db.push("Profiles/" + username + "/Character", character.getDict())
+                    clear()
+                    character.show()
+                    menu()
             else:
                 print("You do not have enough money")
         if(command == 'BUY'):
@@ -931,8 +932,11 @@ def SelectionMenu():
                     character.Health = character.Health - character.WeaponBonus[0]
 
                     bonus_money = int(1500 * random.randint(50, 101)/100)
+                    bonus_exp = int(character.Experience * random.randint(25, 51)/100)
                     character.Money = character.Money + bonus_money
+                    character.Experience = character.Experience + bonus_exp
                     print("You gained $" + str(bonus_money))
+                    print("You gained " + str(bonus_exp) + " Experience")
                     conn.db.push("Profiles/" + username + "/Character", character.getDict())
                     input("type anything to continue... ")
                     clear()
