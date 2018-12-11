@@ -6,6 +6,7 @@ from lootbox import Lootbox
 from uuid import getnode as get_mac
 import os
 import random
+import time
 
 #Colors
 red = "\033[31m"
@@ -601,6 +602,8 @@ def JoinFight(character):
         return 1
     if(team2Win):
         print("You Lost")
+        connection.passTurn(roomName,(positon % roomSize) + 1)
+        time.sleep(1)
         try:
             connection.close(roomName)
         except:
@@ -833,6 +836,8 @@ def StartFight(character):
 
     if(team1Win):
         print("You Lost")
+        connection.passTurn(roomName,2)
+        time.sleep(1)
         try:
             connection.close(roomName)
         except:
