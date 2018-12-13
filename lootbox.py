@@ -148,7 +148,7 @@ class Lootbox():
         WeaponStats[4] = self.getType()
         return WeaponStats
 
-    def generate(self,type=[None]):
+    def generate(self,type=[None],lvl=0):
         self.val = randint(0,100)
         if(self.val <= 59):
             print("You Got a Common Weapon!")
@@ -165,4 +165,10 @@ class Lootbox():
         else:
             self.Weapon[0] = self.WeaponName(type[0])
             self.Weapon[1][4] = type
+
+        for i in range(lvl):
+            randStat = randint(0, 3)
+            randStatBoost = randint(0,2)
+            self.Weapon[1][randStat] = self.Weapon[1][randStat] + randStatBoost
+
         return self.Weapon

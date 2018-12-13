@@ -106,7 +106,10 @@ class Character():
             return chr(i + 55)
 
     def getRange(self):
-        return int(math.floor((self.Speed + self.WeaponBonus[3])/5))
+        rang = int(math.floor((self.Speed + self.WeaponBonus[3])/5))
+        if(rang < 1):
+            rang = 1
+        return rang
 
     def show(self):
         #print(self.Name + "\t[" + self.Style + ", " + self.Weapon + "]" + "\tHealth: " + str(self.Health) + "\nAttack: " + str(self.Attack) + "\tDefense: " + str(self.Defense) + "\tSpeed: " + str(self.Speed) + "\nMoney: " + str(self.Money))

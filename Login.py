@@ -129,10 +129,10 @@ def begin(conn):
                 Good = input("Is this good (y/n)? ")
                 
             clear()
-            loot = LB.generate(Style1 + Style2)
+            loot = LB.generate(Style1 + Style2, 0)
             print("You Got:",loot)
             print()
-            input("type anything to coninue... ")
+            input("type anything to continue... ")
             Weapon = loot[0]
             WeaponBonus = (loot[1][0],loot[1][1],loot[1][2],loot[1][3],loot[1][4])
 
@@ -457,6 +457,8 @@ def JoinFight(character):
     team1[2] = character
     team1[2].location = locations[2]
     b.place(team1[2].location,blue + "&" + end)
+
+    team1.reverse()
 
     connection = MultiplayerConnection()
     clear()
@@ -899,7 +901,7 @@ def SelectionMenu():
                     new_weapon = False
                     Weapon = None
                     while(new_weapon == False):
-                        Weapon = LB.generate()
+                        Weapon = LB.generate(lvl=character.getLevel())
                         #print(Weapon)
                         new_weapon = True
                         for key, value in character.Stash.items():
